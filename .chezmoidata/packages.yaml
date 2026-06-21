@@ -22,10 +22,12 @@ packages:
             - "kustomize"
             - "mas"
             - "nmap"
+            - "opentofu"
             - "python@3.14"
             - "s3cmd"
             - "sshpass"
             - "stern"
+            - "terraform"
             - "thefuck"
             - "the_silver_searcher"
             - "tree"
@@ -46,10 +48,8 @@ packages:
             - "microsoft-remote-desktop"
             - "mockoon"
             - "ngrok"
-            - "opentofu"
             - "orbstack"
             - "postman"
-            - "terraform"
             - "zed@preview"
         mas: []
 
