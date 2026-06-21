@@ -28,8 +28,21 @@ if ! test -d $HOME/src/Resume; then
     gh repo clone aechrok/Resume
 fi
 
-if ! test -d $HOME/src/dotfiles; then
-    gh repo clone aechrok/dotfiles
+# dotfiles is managed by chezmoi itself, so symlink the working copy to the
+# chezmoi source dir instead of maintaining a second clone. Editing files under
+# $HOME/src/dotfiles then writes straight into the source. Idempotent: only
+# (re)create the link when it's missing or pointing elsewhere, and never clobber
+# an existing real directory.
+DOTFILES_LINK="$HOME/src/dotfiles"
+DOTFILES_SOURCE="{{ .chezmoi.sourceDir }}"
+if [ -L "$DOTFILES_LINK" ]; then
+    if [ "$(readlink "$DOTFILES_LINK")" != "$DOTFILES_SOURCE" ]; then
+        ln -sfn "$DOTFILES_SOURCE" "$DOTFILES_LINK"
+    fi
+elif [ -e "$DOTFILES_LINK" ]; then
+    echo "WARNING: $DOTFILES_LINK exists and is not a symlink; leaving it untouched." >&2
+else
+    ln -s "$DOTFILES_SOURCE" "$DOTFILES_LINK"
 fi
 
 # WORK REPOS ========================================================
