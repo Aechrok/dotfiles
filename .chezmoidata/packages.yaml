@@ -3,6 +3,7 @@ packages:
         taps:
             - "cjbassi/gotop"
             - "derailed/k9s"
+            - "steipete/tap"
         brews:
             - "docker-compose"
             - "figlet"

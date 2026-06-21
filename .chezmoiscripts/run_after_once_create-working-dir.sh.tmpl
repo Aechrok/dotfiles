@@ -5,91 +5,91 @@ mkdir -p $HOME/src
 
 # UNIVERSAL REPOS ====================================================
 cd $HOME/src
-if ! test -d $HOME/src/Aechrok
+if ! test -d $HOME/src/Aechrok; then
     gh repo clone aechrok/Aechrok
-end
+fi
 
-if ! test -d $HOME/src/Resume
+if ! test -d $HOME/src/Resume; then
     gh repo clone aechrok/Resume
-end
+fi
 
-if ! test -d $HOME/src/dotfiles
+if ! test -d $HOME/src/dotfiles; then
     gh repo clone aechrok/dotfiles
-end
+fi
 
 # WORK REPOS ========================================================
 {{ if .isWorkComputer -}}
 mkdir -p $HOME/src/coreweave
 cd $HOME/src/coreweave
 
-if ! test -d $HOME/src/coreweave/dnscontrol
+if ! test -d $HOME/src/coreweave/dnscontrol; then
     gh repo clone coreweave/dnscontrol
-end
+fi
 
-if ! test -d $HOME/src/coreweave/dominion
+if ! test -d $HOME/src/coreweave/dominion; then
     gh repo clone coreweave/dominion
-end
+fi
 
-if ! test -d $HOME/src/coreweave/cw-tools
+if ! test -d $HOME/src/coreweave/cw-tools; then
     gh repo clone coreweave/cw-tools
-end
+fi
 
-if ! test -d $HOME/src/coreweave/okta
+if ! test -d $HOME/src/coreweave/okta; then
     gh repo clone coreweave/okta
-end
+fi
 
-if ! test -d $HOME/src/coreweave/it-engineering
+if ! test -d $HOME/src/coreweave/it-engineering; then
     gh repo clone coreweave/it-engineering
-end
+fi
 
-if ! test -d $HOME/src/coreweave/nexus
+if ! test -d $HOME/src/coreweave/nexus; then
     gh repo clone coreweave/nexus
-end
+fi
 
-if ! test -d $HOME/src/coreweave/nexus-api
+if ! test -d $HOME/src/coreweave/nexus-api; then
     gh repo clone coreweave/nexus-api
-end
+fi
 
-if ! test -d $HOME/src/coreweave/thanos
+if ! test -d $HOME/src/coreweave/thanos; then
     gh repo clone coreweave/thanos
-end
+fi
 
-if ! test -d $HOME/src/coreweave/k8s-services
+if ! test -d $HOME/src/coreweave/k8s-services; then
     gh repo clone coreweave/k8s-services
-end
+fi
 
 # DevX
 mkdir -p $HOME/src/coreweave/devx
 cd $HOME/src/coreweave/devx
 
-if ! test -d $HOME/src/coreweave/devx/coderdotcom
+if ! test -d $HOME/src/coreweave/devx/coderdotcom; then
     gh repo clone coreweave/coderdotcom
-end
+fi
 
-if ! test -d $HOME/src/coreweave/devx/cw-eng-cli
+if ! test -d $HOME/src/coreweave/devx/cw-eng-cli; then
     gh repo clone coreweave/cw-eng-cli
-end
+fi
 
-if ! test -d $HOME/src/coreweave/devx/devx-charts
+if ! test -d $HOME/src/coreweave/devx/devx-charts; then
     gh repo clone coreweave/devx-charts
-end
+fi
 
-if ! test -d $HOME/src/coreweave/devx/devx-deploy
+if ! test -d $HOME/src/coreweave/devx/devx-deploy; then
     gh repo clone coreweave/devx-deploy
-end
+fi
 
-if ! test -d $HOME/src/coreweave/devx/devex-docs
+if ! test -d $HOME/src/coreweave/devx/devex-docs; then
     gh repo clone coreweave/devex-docs
-end
+fi
 {{ end -}}
 
 # PRIVATE REPOS ====================================================
-{{ if ne .isWorkComputer -}}
-if ! test -d $HOME/src/infrastructure
+{{ if not .isWorkComputer -}}
+if ! test -d $HOME/src/infrastructure; then
     gh repo clone aechrok/infrastructure
-end
+fi
 
-if ! test -d $HOME/src/aechrok.github.io
+if ! test -d $HOME/src/aechrok.github.io; then
     gh repo clone aechrok/aechrok.github.io
-end
+fi
 {{ end -}}
