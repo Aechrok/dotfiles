@@ -53,17 +53,20 @@ mas {{ .name | quote }}, id: {{ .id }}
 {{ end -}}
 BREWEOF
 
-# Trust all taps
+# Tap and trust all taps
 {{ range .packages.universal.taps -}}
 brew tap --force {{ . | quote | replace " " "\" \"" }}
+brew trust {{ . | quote | replace " " "\" \"" }}
 {{ end -}}
 {{ if .isWorkComputer -}}
 {{ range .packages.work.taps -}}
 brew tap --force {{ . | quote | replace " " "\" \"" }}
+brew trust {{ . | quote | replace " " "\" \"" }}
 {{ end -}}
 {{ else -}}
 {{ range .packages.private.taps -}}
 brew tap --force {{ . | quote | replace " " "\" \"" }}
+brew trust {{ . | quote | replace " " "\" \"" }}
 {{ end -}}
 {{ end -}}
 
