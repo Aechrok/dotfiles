@@ -3,6 +3,7 @@ packages:
         taps:
             - "cjbassi/gotop"
             - "derailed/k9s"
+            - "hashicorp/tap"
         brews:
             - "docker-compose"
             - "duti"
