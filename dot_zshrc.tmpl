@@ -6,10 +6,10 @@ export KUBECONFIG=$(ls ~/.kube | grep conf | awk -v d="$HOME/.kube/" '{ printf "
 export DOCKER_DEFAULT_PLATFORM=linux/arm64
 
 {{ if .isWorkComputer -}}
-#export DOPPLER_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/4yuhb7kg7wmnmcvmknorxteeye/credential" "nlytcyuvecwfsemch5rohs2nwu" "YVWHX4FPNVBEHNNKBHCNO2IJCI"}} # Okta Project
-export DOPPLER_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/6xaaq6k54gduufe277cwk3hhmm/credential" "nlytcyuvecwfsemch5rohs2nwu" "YVWHX4FPNVBEHNNKBHCNO2IJCI"}}
+#export DOPPLER_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/4yuhb7kg7wmnmcvmknorxteeye/credential" "YVWHX4FPNVBEHNNKBHCNO2IJCI"}} # Okta Project
+export DOPPLER_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/6xaaq6k54gduufe277cwk3hhmm/credential" "YVWHX4FPNVBEHNNKBHCNO2IJCI"}}
 export SRC_ENDPOINT=https://coreweave.sourcegraphcloud.com/
-export SRC_ACCESS_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/ztxo2fvc3wp7oofvmywod5mznm/credential" "nlytcyuvecwfsemch5rohs2nwu" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+export SRC_ACCESS_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/ztxo2fvc3wp7oofvmywod5mznm/credential" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
 {{ end -}}
 
 
