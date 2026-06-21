@@ -19,7 +19,6 @@ packages:
             - "kubernetes-cli"
             - "kustomize"
             - "mas"
-            - "neofetch"
             - "nmap"
             - "python@3.14"
             - "s3cmd"
