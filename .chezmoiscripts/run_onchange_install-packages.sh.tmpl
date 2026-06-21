@@ -21,6 +21,7 @@ cask {{ . | quote }}
 {{ range .packages.universal.mas -}}
 mas {{ .name | quote }}, id: {{ .id }}
 {{ end -}}
+
 {{ if .isWorkComputer -}}
 {{ range .packages.work.taps -}}
 tap {{ . | quote | replace " " "\", \"" }}
@@ -34,7 +35,9 @@ cask {{ . | quote }}
 {{ range .packages.work.mas -}}
 mas {{ .name | quote }}, id: {{ .id }}
 {{ end -}}
+
 {{ else -}}
+
 {{ range .packages.private.taps -}}
 tap {{ . | quote | replace " " "\", \"" }}
 {{ end -}}

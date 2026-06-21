@@ -3,9 +3,9 @@ packages:
         taps:
             - "cjbassi/gotop"
             - "derailed/k9s"
-            - "steipete/tap"
         brews:
             - "docker-compose"
+            - "duti"
             - "figlet"
             - "gh"
             - "git-lfs"
@@ -35,7 +35,6 @@ packages:
             - "1password-cli"
             - "claude"
             - "claude-code"
-            - "codexbar"
             - "dbeaver-community"
             - "font-fire-code"
             - "font-hack"
