@@ -182,23 +182,26 @@ defaults write com.apple.commerce AutoUpdate -bool true
 defaults write com.apple.commerce AutoUpdateRestartRequired -bool true
 
 # DEFAULT APPS
-# Open code/text files with VS Code instead of the system default (e.g. Zed).
-# `duti -s` overwrites the existing handler for each type, so this is idempotent.
-echo "Setting VS Code as the default editor for code files"
+# Make VS Code the handler for broad text/code parent UTIs. macOS 26 forces a
+# consent prompt for every `duti -s` call (editing the LaunchServices plist
+# directly is silently discarded), so we target a handful of parent UTIs instead
+# of ~60 extensions to keep prompts to a minimum. Files inherit this via UTI
+# conformance when they lack a more-specific handler. Caveats: this won't
+# override apps that explicitly claim a subtype (e.g. Xcode for .py/.swift), nor
+# cover languages with no registered UTI (Go, Rust, Terraform, etc.) — set those
+# manually via Finder > Get Info > Change All if needed. `duti -s` overwrites, so
+# this is idempotent.
+echo "Setting VS Code as the default editor for common code/text UTIs"
 VSCODE_BUNDLE_ID="com.microsoft.VSCode"
-for ext in \
-  txt text md markdown rst \
-  py js jsx ts tsx mjs cjs json jsonc \
-  yaml yml toml ini cfg conf env \
-  sh bash zsh fish \
-  go rs rb java kt kts swift dart \
-  c h cpp hpp cc cxx cs php lua pl r jl \
-  html htm css scss sass less xml svg \
-  sql graphql gql proto \
-  vue svelte astro \
-  tf tfvars hcl gradle properties \
-  log csv tsv diff patch; do
-    duti -s "$VSCODE_BUNDLE_ID" "$ext" all
+for uti in \
+  public.plain-text \
+  public.source-code \
+  public.script \
+  public.shell-script \
+  public.json \
+  public.yaml \
+  public.xml; do
+    duti -s "$VSCODE_BUNDLE_ID" "$uti" all
 done
 
 # KEYBOARD SHORTCUTS
