@@ -1,82 +1,89 @@
 packages:
-    universal:
-        taps:
-            - "cjbassi/gotop"
-            - "derailed/k9s"
-            - "hashicorp/tap"
-        brews:
-            - "docker-compose"
-            - "duti"
-            - "figlet"
-            - "gh"
-            - "git-lfs"
-            - "gnupg"
-            - "gpg"
-            - "gotop"
-            - "helm"
-            - "helmfile"
-            - "jq"
-            - "kubeconform"
-            - "kubectx"
-            - "kubernetes-cli"
-            - "kustomize"
-            - "mas"
-            - "nmap"
-            - "opentofu"
-            - "python@3.14"
-            - "s3cmd"
-            - "sshpass"
-            - "stern"
-            - "terraform"
-            - "thefuck"
-            - "the_silver_searcher"
-            - "tree"
-            - "vim"
-            - "wget"
-            - "yq"
-        casks:
-            - "1password-cli"
-            - "claude"
-            - "claude-code"
-            - "dbeaver-community"
-            - "font-hack"
-            - "font-hack-nerd-font"
-            - "github"
-            - "google-chrome"
-            - "iterm2"
-            - "maccy"
-            - "microsoft-remote-desktop"
-            - "mockoon"
-            - "ngrok"
-            - "orbstack"
-            - "postman"
-            - "zed@preview"
-        mas: []
+  universal:
+    taps:
+      - "cjbassi/gotop"
+      - "derailed/k9s"
+      - "hashicorp/tap"
+    brews:
+      - "bash"
+      - "chezmoi"
+      - "docker-compose"
+      - "duti"
+      - "figlet"
+      - "gh"
+      - "git-lfs"
+      - "gnupg"
+      - "gpg"
+      - "gotop"
+      - "helm"
+      - "helmfile"
+      - "jq"
+      - "kubeconform"
+      - "kubectx"
+      - "kubernetes-cli"
+      - "kustomize"
+      - "mas"
+      - "nmap"
+      - "opentofu"
+      - "python@3.14"
+      - "s3cmd"
+      - "sshpass"
+      - "stern"
+      - "terraform"
+      - "thefuck"
+      - "the_silver_searcher"
+      - "tree"
+      - "vim"
+      - "wget"
+      - "yq"
+    casks:
+      - "1password-cli"
+      - "claude"
+      - "claude-code"
+      - "dbeaver-community"
+      - "font-hack"
+      - "font-hack-nerd-font"
+      - "github"
+      - "google-chrome"
+      - "iterm2"
+      - "maccy"
+      - "microsoft-remote-desktop"
+      - "mockoon"
+      - "ngrok"
+      - "orbstack"
+      - "postman"
+      - "visual-studio-code"
+      - "warp" 
+      - "zed@preview"
+    mas:
+      - name: "Numbers"
+        id: "361304891"
+      - name: "Xcode"
+        id: "497799835"
 
-    work:
-        taps:
-            - "chainguard-dev/tap"
-            - "derailed/k9s"
-            - "sourcegraph/src-cli"
-        brews:
-            - "argocd"
-            - "awscli"
-            - "azure-cli"
-            - "blackbox"
-            - "pre-commit"
-            - "src-cli"
-            - "virtctl"
-        casks:
-            - "firefox"
-            - "gcloud-cli"
-            - "loom"
-        mas: []
+  work:
+    taps:
+      - "chainguard-dev/tap"
+      - "sourcegraph/src-cli"
+    brews:
+      - "argocd"
+      - "awscli"
+      - "azure-cli"
+      - "blackbox"
+      - "pre-commit"
+      - "src-cli"
+      - "virtctl"
+    casks:
+      - "firefox"
+      - "gcloud-cli"
+      - "loom"
+    mas: []
 
-    private:
-        taps: []
-        brews: []
-        casks:
-            - "discord"
-        mas:
-            - name: "Telegram"
-              id: "747648890"
+  private:
+    taps: []
+    brews: []
+    casks:
+      - "discord"
+    mas:
+      - name: "Telegram"
+        id: "747648890"

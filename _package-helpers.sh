@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Shared helpers for audit-packages.sh and cleanup-packages.sh.
 # Source this file; do not execute directly.
 
@@ -14,6 +14,11 @@ fi
 
 if ! command -v jq &>/dev/null; then
     echo "Error: jq is required but not installed" >&2
+    exit 1
+fi
+
+if ! command -v yq &>/dev/null; then
+    echo "Error: yq is required but not installed" >&2
     exit 1
 fi
 
@@ -37,38 +42,10 @@ detect_profile() {
 
 # --- YAML parser ---
 # Extracts flat list of values from packages.<subsection>.<key> in packages.yaml.
+# Scalar list items are emitted as-is; mapping items (e.g. mas entries) emit their .name.
 extract_list() {
     local subsection="$1" key="$2"
-    local in_sub=0 in_key=0
-
-    while IFS= read -r line; do
-        if [[ "$line" =~ ^"    ${subsection}:" ]]; then
-            in_sub=1; in_key=0; continue
-        fi
-        if [[ $in_sub -eq 1 && "$line" =~ ^"    "[a-z] && ! "$line" =~ ^"    ${subsection}:" ]]; then
-            in_sub=0; in_key=0; continue
-        fi
-        if [[ $in_sub -eq 1 ]]; then
-            if [[ "$line" =~ ^"        ${key}:" ]]; then
-                [[ "$line" == *"[]"* ]] && { in_key=0; continue; }
-                in_key=1; continue
-            fi
-            if [[ "$line" =~ ^"        "[a-z] ]]; then
-                in_key=0; continue
-            fi
-        fi
-        if [[ $in_key -eq 1 ]]; then
-            if [[ "$line" =~ name:[[:space:]]+\"([^\"]+)\" ]]; then
-                echo "${BASH_REMATCH[1]}"
-            elif [[ "$line" =~ ^[[:space:]]+id: ]]; then
-                continue
-            elif [[ "$line" =~ ^[[:space:]]+-[[:space:]]+\"([^\"]+)\" ]]; then
-                echo "${BASH_REMATCH[1]}"
-            elif [[ "$line" =~ ^[[:space:]]+-[[:space:]]+(.+) ]]; then
-                echo "${BASH_REMATCH[1]}"
-            fi
-        fi
-    done < "$PACKAGES_YAML"
+    yq -r ".packages.${subsection}.${key}[]? | (.name // .)" "$PACKAGES_YAML"
 }
 
 # Collect expected values for a key across universal + profile

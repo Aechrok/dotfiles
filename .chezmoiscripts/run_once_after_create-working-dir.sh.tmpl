@@ -1,6 +1,21 @@
 #!/usr/bin/env bash
 # Check if the repos are already cloned
 
+# Ensure the GitHub CLI is authenticated before any clones. Work repos (and
+# SSO-protected orgs) fail without it. `gh auth status` is gh's own persisted
+# state, so this only triggers a login when actually needed and re-prompts
+# automatically if the token is ever revoked or expires.
+if ! gh auth status >/dev/null 2>&1; then
+    if [ -t 0 ]; then
+        echo "> GitHub CLI is not authenticated — launching 'gh auth login'"
+        gh auth login
+    else
+        echo "ERROR: gh is not authenticated and there is no terminal for 'gh auth login'." >&2
+        echo "       Run 'gh auth login' manually, then re-run 'chezmoi apply'." >&2
+        exit 1
+    fi
+fi
+
 mkdir -p $HOME/src
 
 # UNIVERSAL REPOS ====================================================
