@@ -36,7 +36,6 @@ packages:
             - "claude"
             - "claude-code"
             - "dbeaver-community"
-            - "font-fire-code"
             - "font-hack"
             - "font-hack-nerd-font"
             - "github"
