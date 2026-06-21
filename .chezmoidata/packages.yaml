@@ -11,6 +11,7 @@ packages:
             - "gh"
             - "git-lfs"
             - "gnupg"
+            - "gpg"
             - "gotop"
             - "helm"
             - "helmfile"
