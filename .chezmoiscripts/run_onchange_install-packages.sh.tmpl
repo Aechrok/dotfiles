@@ -1,0 +1,90 @@
+#!/bin/bash
+{{ if eq .chezmoi.os "darwin" -}}
+
+# Environment state hashes — changes here trigger run_onchange re-execution
+# brew leaves: {{ output "brew" "leaves" | sha256sum }}
+# brew casks: {{ output "brew" "list" "--cask" "-1" | sha256sum }}
+# brew taps: {{ output "brew" "tap" | sha256sum }}
+
+# Generate combined Brewfile in a temp file
+brewfile=$(mktemp)
+cat > "$brewfile" <<BREWEOF
+{{ range .packages.universal.taps -}}
+tap {{ . | quote | replace " " "\", \"" }}
+{{ end -}}
+{{ range .packages.universal.brews -}}
+brew {{ . | quote }}
+{{ end -}}
+{{ range .packages.universal.casks -}}
+cask {{ . | quote }}
+{{ end -}}
+{{ range .packages.universal.mas -}}
+mas {{ .name | quote }}, id: {{ .id }}
+{{ end -}}
+{{ if .isWorkComputer -}}
+{{ range .packages.work.taps -}}
+tap {{ . | quote | replace " " "\", \"" }}
+{{ end -}}
+{{ range .packages.work.brews -}}
+brew {{ . | quote }}
+{{ end -}}
+{{ range .packages.work.casks -}}
+cask {{ . | quote }}
+{{ end -}}
+{{ range .packages.work.mas -}}
+mas {{ .name | quote }}, id: {{ .id }}
+{{ end -}}
+{{ else -}}
+{{ range .packages.private.taps -}}
+tap {{ . | quote | replace " " "\", \"" }}
+{{ end -}}
+{{ range .packages.private.brews -}}
+brew {{ . | quote }}
+{{ end -}}
+{{ range .packages.private.casks -}}
+cask {{ . | quote }}
+{{ end -}}
+{{ range .packages.private.mas -}}
+mas {{ .name | quote }}, id: {{ .id }}
+{{ end -}}
+{{ end -}}
+BREWEOF
+
+# Install packages
+brew bundle --file="$brewfile"
+
+# Warn about and remove undeclared packages
+undeclared=$(brew bundle cleanup --file="$brewfile" 2>/dev/null)
+if [[ -n "$undeclared" ]]; then
+    echo ""
+    echo "WARNING: Removing packages not declared in packages.yaml:"
+    echo "$undeclared"
+    brew bundle cleanup --force --file="$brewfile"
+    brew autoremove
+fi
+rm -f "$brewfile"
+
+{{ end -}}
+
+{{ if eq .chezmoi.os "darwin" -}}
+# Unfortunately I did not yet find a way to order scripts so I'm inlining this. Should all be pretty much a no-op anyways.
+# We use the version of the secret to determine if we need to update the secret
+# This needs to be kept in sync with the .gitconfig file
+# Secret version: {{ (onepassword "y4tih67adp6szdurvfhonwkezy" "nlytcyuvecwfsemch5rohs2nwu" "YVWHX4FPNVBEHNNKBHCNO2IJCI").version }}
+
+# Early abort if the key is already added
+if gpg --list-secret-keys | grep -q {{ onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/y4tih67adp6szdurvfhonwkezy/id" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}; then
+    echo "GPG key is present already"
+else
+    # EOF the key into a temporary file
+
+    tmpDir=$(mktemp -d)
+    tmpFile="${tmpDir}/private.key"
+
+    # Manually use the onepassword command to get the file
+    op read --out-file $tmpFile op://nlytcyuvecwfsemch5rohs2nwu/y4tih67adp6szdurvfhonwkezy/private.key --account "YVWHX4FPNVBEHNNKBHCNO2IJCI"
+
+    # Import the key
+    gpg --import $tmpFile
+fi
+{{ end -}}

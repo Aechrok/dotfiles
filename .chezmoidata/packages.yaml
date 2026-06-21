@@ -1,0 +1,83 @@
+packages:
+    universal:
+        taps:
+            - "cjbassi/gotop"
+            - "derailed/k9s"
+        brews:
+            - "docker-compose"
+            - "figlet"
+            - "gh"
+            - "git-lfs"
+            - "gnupg"
+            - "gotop"
+            - "helm"
+            - "helmfile"
+            - "jq"
+            - "kubeconform"
+            - "kubectx"
+            - "kubens"
+            - "kubernetes-cli"
+            - "kustomize"
+            - "mas"
+            - "neofetch"
+            - "nmap"
+            - "python@3.14"
+            - "s3cmd"
+            - "sshpass"
+            - "stern"
+            - "thefuck"
+            - "the_silver_searcher"
+            - "tree"
+            - "vim"
+            - "wget"
+            - "yq"
+        casks:
+            - "1password-cli"
+            - "claude"
+            - "claude-code"
+            - "codexbar"
+            - "dbeaver-community"
+            - "font-fire-code"
+            - "font-hack"
+            - "font-hack-nerd-font"
+            - "github"
+            - "google-chrome"
+            - "iterm2"
+            - "maccy"
+            - "microsoft-remote-desktop"
+            - "mockoon"
+            - "ngrok"
+            - "opentofu"
+            - "orbstack"
+            - "postman"
+            - "terraform"
+            - "zed@preview"
+        mas: []
+
+    work:
+        taps:
+            - "chainguard-dev/tap"
+            - "derailed/k9s"
+            - "sourcegraph/src-cli"
+        brews:
+            - "argocd"
+            - "awscli"
+            - "azure-cli"
+            - "blackbox"
+            - "pre-commit"
+            - "src-cli"
+            - "virtctl"
+        casks:
+            - "firefox"
+            - "gcloud-cli"
+            - "loom"
+        mas: []
+
+    private:
+        taps: []
+        brews: []
+        casks:
+            - "discord"
+        mas:
+            - name: "Telegram"
+              id: "747648890"

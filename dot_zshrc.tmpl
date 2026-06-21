@@ -1,0 +1,59 @@
+PATH="$HOME/.scripts:${KREW_ROOT:-$HOME/.krew}/bin:/opt/homebrew/sbin:/opt/homebrew/bin:/usr/local/bin:/usr/local/sbin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+
+PATH="$(go env GOPATH)/bin:$PATH"
+
+export KUBECONFIG=$(ls ~/.kube | grep conf | awk -v d="$HOME/.kube/" '{ printf "%s%s:", d,$0}')
+export DOCKER_DEFAULT_PLATFORM=linux/arm64
+
+{{ if .isWorkComputer -}}
+#export DOPPLER_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/4yuhb7kg7wmnmcvmknorxteeye/credential" "nlytcyuvecwfsemch5rohs2nwu" "YVWHX4FPNVBEHNNKBHCNO2IJCI"}} # Okta Project
+export DOPPLER_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/6xaaq6k54gduufe277cwk3hhmm/credential" "nlytcyuvecwfsemch5rohs2nwu" "YVWHX4FPNVBEHNNKBHCNO2IJCI"}}
+export SRC_ENDPOINT=https://coreweave.sourcegraphcloud.com/
+export SRC_ACCESS_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/ztxo2fvc3wp7oofvmywod5mznm/credential" "nlytcyuvecwfsemch5rohs2nwu" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+{{ end -}}
+
+
+alias dns="dig +noall +answer"
+alias c="chezmoi"
+alias k="kubectl"
+alias kns="kubens"
+alias kctx="kubectx"
+alias kcheck="popeye"
+alias listen="lsof -i -P | grep LISTEN | grep"
+alias listen-all="lsof -i -P | grep LISTEN"
+alias virt="virtctl console"
+alias gam="/Users/lmartin/bin/gam7/gam"
+
+{{ if .isWorkComputer -}}
+alias vdi="ssh -i ~/.ssh/coreweave lmartin@lmartin-1.tenant-coreweave-vdi.coreweave.cloud"
+alias tl="tsh login --proxy=teleport.na.int.coreweave.com"
+
+# TELEPORT CONFIGURATION ==========
+jump(){
+   echo "Loggin in to North America teleport"
+   # Login to North America teleport
+   tsh login  --proxy=teleport.na.int.coreweave.com:443 --auth=okta
+
+   if [ $# -eq 0 ]; then
+       # List Bare Metal Jump Box options
+       bmjb_options=$(tsh ls | grep metal-jump | awk '{print $1}')
+       # Use fzf for interactive selection
+       selected_bmjb=$(echo "$bmjb_options" | fzf --height 20% --prompt "Select a jump box: ")
+   else
+       selected_region=$1
+       echo "Selected region: $selected_region"
+       selected_bmjb=$(tsh ls | grep metal-jump | grep $selected_region | awk '{print $1}')
+   fi
+
+   # Login to selected Bare Metal Jump Box
+   tsh ssh acc@$selected_bmjb
+}
+
+eval "$(chef shell-init zsh)"
+{{ end -}}
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+export NVM_DIR="$HOME/.nvm"
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion

@@ -1,0 +1,38 @@
+{{ if .isWorkComputer -}}
+[default]
+ignore_configure_endpoint_urls = true
+
+[profile it-eng-caios]
+endpoint_url = https://cwobject.com
+s3 =
+    addressing_style = virtual
+
+    signature_version = s3v4
+
+[profile atlas]
+endpoint_url = https://cwobject.com
+s3 =
+    addressing_style = virtual
+
+    signature_version = s3v4
+
+[profile it-eng-aws-ecr-chef-deployer]
+region = us-east-2
+output = json
+
+[it-eng-aws-ecr-chef-deployer]
+aws_access_key_id = {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/xeg5n4euxqynkcdls2dx7rgwmm/username" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+aws_secret_access_key = {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/xeg5n4euxqynkcdls2dx7rgwmm/password" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+
+[profile iteng-sso]
+sso_session = coreweave-sso
+sso_account_id = 806196671243
+sso_role_name = ITEngAccess
+region = us-east-2
+output = json
+
+[sso-session coreweave-sso]
+sso_start_url = https://d-9067de3f64.awsapps.com/start
+sso_region = us-east-1
+sso_registration_scopes = sso:account:access
+{{ end -}}

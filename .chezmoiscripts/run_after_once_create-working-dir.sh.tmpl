@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# Check if the repos are already cloned
+
+mkdir -p $HOME/src
+
+# UNIVERSAL REPOS ====================================================
+cd $HOME/src
+if ! test -d $HOME/src/Aechrok
+    gh repo clone aechrok/Aechrok
+end
+
+if ! test -d $HOME/src/Resume
+    gh repo clone aechrok/Resume
+end
+
+if ! test -d $HOME/src/dotfiles
+    gh repo clone aechrok/dotfiles
+end
+
+# WORK REPOS ========================================================
+{{ if .isWorkComputer -}}
+mkdir -p $HOME/src/coreweave
+cd $HOME/src/coreweave
+
+if ! test -d $HOME/src/coreweave/dnscontrol
+    gh repo clone coreweave/dnscontrol
+end
+
+if ! test -d $HOME/src/coreweave/dominion
+    gh repo clone coreweave/dominion
+end
+
+if ! test -d $HOME/src/coreweave/cw-tools
+    gh repo clone coreweave/cw-tools
+end
+
+if ! test -d $HOME/src/coreweave/okta
+    gh repo clone coreweave/okta
+end
+
+if ! test -d $HOME/src/coreweave/it-engineering
+    gh repo clone coreweave/it-engineering
+end
+
+if ! test -d $HOME/src/coreweave/nexus
+    gh repo clone coreweave/nexus
+end
+
+if ! test -d $HOME/src/coreweave/nexus-api
+    gh repo clone coreweave/nexus-api
+end
+
+if ! test -d $HOME/src/coreweave/thanos
+    gh repo clone coreweave/thanos
+end
+
+if ! test -d $HOME/src/coreweave/k8s-services
+    gh repo clone coreweave/k8s-services
+end
+
+# DevX
+mkdir -p $HOME/src/coreweave/devx
+cd $HOME/src/coreweave/devx
+
+if ! test -d $HOME/src/coreweave/devx/coderdotcom
+    gh repo clone coreweave/coderdotcom
+end
+
+if ! test -d $HOME/src/coreweave/devx/cw-eng-cli
+    gh repo clone coreweave/cw-eng-cli
+end
+
+if ! test -d $HOME/src/coreweave/devx/devx-charts
+    gh repo clone coreweave/devx-charts
+end
+
+if ! test -d $HOME/src/coreweave/devx/devx-deploy
+    gh repo clone coreweave/devx-deploy
+end
+
+if ! test -d $HOME/src/coreweave/devx/devex-docs
+    gh repo clone coreweave/devex-docs
+end
+{{ end -}}
+
+# PRIVATE REPOS ====================================================
+{{ if ne .isWorkComputer -}}
+if ! test -d $HOME/src/infrastructure
+    gh repo clone aechrok/infrastructure
+end
+
+if ! test -d $HOME/src/aechrok.github.io
+    gh repo clone aechrok/aechrok.github.io
+end
+{{ end -}}

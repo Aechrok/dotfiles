@@ -1,0 +1,156 @@
+{{ if .isWorkComputer -}}
+# Added by OrbStack: 'orb' SSH host for Linux machines
+# This only works if it's at the top of ssh_config (before any Host blocks).
+# This won't be added again if you remove it.
+Include ~/.orbstack/ssh/config
+
+Host coder
+    Hostname lmartin-f5e2ec24-0b06-4c02-96b4-4bf9a49a1d35.coreenv.int.coreweave.com
+    User coder
+    IdentityFile ~/.ssh/coreweave
+
+Host denton-bb2-jump2
+    HostName dnt1e-dh1-dc-jmp2.systems.iteng.int.coreweave.com
+    User itcore
+    Compression yes
+    LogLevel QUIET
+    ExitOnForwardFailure yes
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+    ForwardAgent no
+    LocalForward 127.0.0.1:8007 172.17.86.211:8006
+
+Host denton-bb1-jump1
+    HostName dnt1e-dh1-dc-jmp1.systems.iteng.int.coreweave.com
+    User itcore
+    Compression yes
+    LogLevel QUIET
+    ExitOnForwardFailure yes
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+    ForwardAgent no
+    LocalForward 127.0.0.1:8006 172.17.86.210:8006
+
+Host azure-dir-bb1-jump1
+    HostName dnt1e-dh1-dc-jmp1.systems.iteng.int.coreweave.com
+    User itcore
+    Compression yes
+    LogLevel QUIET
+    ExitOnForwardFailure yes
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+    ForwardAgent no
+    LocalForward 127.0.0.1:3389 172.30.64.4:3389
+
+Host jump_server
+    HostName 3.149.60.26
+    User ubuntu
+    IdentityFile ~/.ssh/aws
+
+
+Host dhcp1
+    Hostname 172.30.0.100
+    ProxyCommand ssh -W %h:%p jump_server
+    User ubuntu
+    IdentityFile ~/.ssh/aws
+    Port 22
+
+Host rubrik-jump1
+    Compression yes
+    User ubuntu
+    LogLevel QUIET
+    ExitOnForwardFailure yes
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+    ForwardAgent no
+    LocalForward 127.0.0.1:3443 192.168.0.108:443
+    LocalForward 127.0.0.1:3444 192.168.0.109:443
+    LocalForward 127.0.0.1:3445 192.168.0.110:443
+    LocalForward 127.0.0.1:3446 192.168.0.111:443
+    IdentityFile ~/.ssh/aws
+    ProxyCommand aws ec2-instance-connect open-tunnel --instance-id i-0f34385aed26dcf3e --profile iteng-sso
+
+Host mon
+    Hostname 172.30.0.29
+    ProxyCommand ssh -W %h:%p jump_server
+    User ubuntu
+    IdentityFile ~/.ssh/aws
+
+Host genetec-dir01-jump1
+    Compression yes
+    User ubuntu
+    LogLevel QUIET
+    ExitOnForwardFailure yes
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+    ForwardAgent no
+    LocalForward 127.0.0.1:3443 192.168.0.113:443
+    LocalForward 127.0.0.1:5900 192.168.0.113:5900
+    IdentityFile ~/.ssh/aws
+    ProxyCommand aws ec2-instance-connect open-tunnel --instance-id i-0f34385aed26dcf3e --profile iteng-sso
+
+# ------------START-CODER-----------
+# This section is managed by coder. DO NOT EDIT.
+#
+# You should not hand-edit this section unless you are removing it, all
+# changes will be lost when running "coder config-ssh".
+#
+Host coder.*
+	ConnectTimeout=0
+	StrictHostKeyChecking=no
+	UserKnownHostsFile=/dev/null
+	LogLevel ERROR
+	ProxyCommand /usr/local/bin/coder --global-config "/Users/lmartin/Library/Application Support/coderv2" ssh --stdio --ssh-host-prefix coder. %h
+
+Host *.coder
+	ConnectTimeout=0
+	StrictHostKeyChecking=no
+	UserKnownHostsFile=/dev/null
+	LogLevel ERROR
+
+Match host *.coder !exec "/usr/local/bin/coder connect exists %h"
+	ProxyCommand /usr/local/bin/coder --global-config "/Users/lmartin/Library/Application Support/coderv2" ssh --stdio --hostname-suffix coder %h
+# ------------END-CODER------------
+
+# --- START CODER VSCODE coder.int.coreweave.com ---
+# This section is managed by the Coder VS Code extension.
+# Changes will be overwritten on the next workspace connection.
+Host coder-vscode.coder.int.coreweave.com--*
+  ConnectTimeout 0
+  LogLevel ERROR
+  ProxyCommand "/Users/lmartin/Library/Application Support/Code/User/globalStorage/coder.coder-remote/coder.int.coreweave.com/bin/coder-darwin-arm64" --global-config "/Users/lmartin/Library/Application Support/Code/User/globalStorage/coder.coder-remote/coder.int.coreweave.com" ssh --disable-autostart --stdio --usage-app=vscode --network-info-dir "/Users/lmartin/Library/Application Support/Code/User/globalStorage/coder.coder-remote/net" --log-dir "/Users/lmartin/Library/Application Support/Code/User/globalStorage/coder.coder-remote/log" -v --ssh-host-prefix coder-vscode.coder.int.coreweave.com-- %h
+  ServerAliveCountMax 3
+  ServerAliveInterval 10
+  SetEnv CODER_SSH_SESSION_TYPE=vscode
+  StrictHostKeyChecking no
+  UserKnownHostsFile /dev/null
+# --- END CODER VSCODE coder.int.coreweave.com ---
+
+Host physec-proxy-pve
+    HostName 172.16.1.63
+    User lmartin
+    Compression yes
+    LogLevel QUIET
+    ExitOnForwardFailure yes
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+    ForwardAgent no
+    LocalForward 127.0.0.1:8006 10.220.39.10:8006
+    LocalForward 127.0.0.1:8007 10.220.39.11:8006
+    LocalForward 127.0.0.1:2207 10.220.39.11:22
+
+Host denton-bb1-gen1
+    HostName dnt1e-dh1-dc-jmp1.systems.iteng.int.coreweave.com
+    User itcore
+    Compression yes
+    LogLevel QUIET
+    ExitOnForwardFailure yes
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+    ForwardAgent no
+    LocalForward 127.0.0.1:5901 10.220.60.6:3389
+
+{{ end -}}
+
+Host disabled
+    IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
