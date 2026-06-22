@@ -13,6 +13,7 @@ packages:
       - "gh"
       - "git-lfs"
       - "gnupg"
+      - "go"
       - "gpg"
       - "gotop"
       - "helm"
@@ -56,6 +57,8 @@ packages:
       - "warp" 
       - "zed@preview"
     mas:
+      - name: "Moom Classic"
+        id: "419330170"
       - name: "Numbers"
         id: "361304891"
       - name: "Xcode"
@@ -70,6 +73,9 @@ packages:
       - "awscli"
       - "azure-cli"
       - "blackbox"
+      - "chainctl"
+      - "doppler"
+      - "krew"
       - "pre-commit"
       - "src-cli"
       - "virtctl"
@@ -77,6 +83,7 @@ packages:
       - "firefox"
       - "gcloud-cli"
       - "loom"
+      - "meetingbar"
     mas: []
 
   private:

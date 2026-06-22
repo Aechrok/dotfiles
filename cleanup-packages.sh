@@ -18,6 +18,17 @@ done
 
 PROFILE="$(detect_profile "$profile_arg")" || { echo "Usage: $0 [--work | --private | --auto] [--dry-run]" >&2; exit 1; }
 
+# --- Upgrade installed packages to their newest versions ---
+if command -v brew &>/dev/null; then
+    if [[ $dry_run -eq 1 ]]; then
+        echo "(dry run — skipping brew upgrade)"
+    else
+        echo "Upgrading installed Homebrew packages..."
+        brew upgrade 2>&1 | sed 's/^/  /'
+        echo ""
+    fi
+fi
+
 echo "Detecting undeclared packages (profile: $PROFILE)..."
 build_expected_sets
 find_offending
