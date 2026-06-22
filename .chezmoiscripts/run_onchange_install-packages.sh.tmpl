@@ -86,7 +86,9 @@ rm -f "$brewfile"
 
 {{ end -}}
 
+# Work GPG key
 {{ if eq .chezmoi.os "darwin" -}}
+{{ if .isWorkComputer -}}
 # Unfortunately I did not yet find a way to order scripts so I'm inlining this. Should all be pretty much a no-op anyways.
 # We use the version of the secret to determine if we need to update the secret
 # This needs to be kept in sync with the .gitconfig file
@@ -107,4 +109,5 @@ else
     # Import the key
     gpg --import $tmpFile
 fi
+{{ end -}}
 {{ end -}}
