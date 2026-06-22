@@ -54,7 +54,7 @@ packages:
       - "orbstack"
       - "postman"
       - "visual-studio-code"
-      - "warp" 
+      - "warp"
       - "zed@preview"
     mas:
       - name: "Moom Classic"
@@ -91,6 +91,8 @@ packages:
     brews: []
     casks:
       - "discord"
+      - "signal"
+      - "twingate"
     mas:
       - name: "Telegram"
         id: "747648890"
