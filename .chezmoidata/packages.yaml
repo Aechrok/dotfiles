@@ -75,7 +75,6 @@ packages:
       - "blackbox"
       - "chainctl"
       - "coder"
-      - "codex-app"
       - "doppler"
       - "krew"
       - "pre-commit"
@@ -83,6 +82,7 @@ packages:
       - "virtctl"
     casks:
       - "codex"
+      - "codex-app"
       - "firefox"
       - "gcloud-cli"
       - "loom"
