@@ -74,12 +74,14 @@ packages:
       - "azure-cli"
       - "blackbox"
       - "chainctl"
+      - "coder"
       - "doppler"
       - "krew"
       - "pre-commit"
       - "src-cli"
       - "virtctl"
     casks:
+      - "codex"
       - "firefox"
       - "gcloud-cli"
       - "loom"
@@ -96,3 +98,57 @@ packages:
     mas:
       - name: "Telegram"
         id: "747648890"
+
+
+linux_packages:
+  universal:
+    keyrings:
+      - name: "githubcli-archive-keyring"
+        url: "https://cli.github.com/packages/githubcli-archive-keyring.gpg"
+        dearmor: false
+      - name: "1password-archive-keyring"
+        url: "https://downloads.1password.com/linux/keys/1password.asc"
+        dearmor: true
+    sources:
+      - name: "github-cli"
+        line: "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main"
+      - name: "1password"
+        line: "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$(dpkg --print-architecture) stable main"
+    apps:
+      - "gh"
+      - "1password-cli"
+
+  work:
+    keyrings:
+      - name: "docker"
+        url: "https://download.docker.com/linux/ubuntu/gpg"
+        dearmor: true
+      - name: "opentofu"
+        url: "https://get.opentofu.org/opentofu.gpg"
+        dearmor: false
+      - name: "opentofu-repo"
+        url: "https://packages.opentofu.org/opentofu/tofu/gpgkey"
+        dearmor: true
+      - name: "hashicorp-archive-keyring"
+        url: "https://apt.releases.hashicorp.com/gpg"
+        dearmor: true
+    sources:
+      - name: "docker"
+        line: 'deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable'
+      - name: "opentofu"
+        line: "deb [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-repo.gpg] https://packages.opentofu.org/opentofu/tofu/any/ any main"
+      - name: "hashicorp"
+        line: 'deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(. /etc/os-release && echo "$VERSION_CODENAME") main'
+    apps:
+      - "docker-ce"
+      - "docker-ce-cli"
+      - "containerd.io"
+      - "docker-buildx-plugin"
+      - "docker-compose-plugin"
+      - "tofu"
+      - "terraform"
+
+  private:
+    keyrings: []
+    sources: []
+    apps: []

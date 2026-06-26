@@ -3,6 +3,8 @@
 
 set -x
 
+echo "Running initial setup for macOS"
+
 # Setup zsh shell
 echo "> Using zsh shell"
 
@@ -219,4 +221,11 @@ for app in "Contacts" "Reminders" "TV" "Music" "Podcasts" "News" "App Store" "Ph
   fi
 done
 
+
+{{ else if eq .chezmoi.os "linux" -}}
+#!/bin/bash
+
+set -x
+
+echo "Running initial setup for Linux"
 {{ end -}}

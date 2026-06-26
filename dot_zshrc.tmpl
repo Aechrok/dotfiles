@@ -28,31 +28,4 @@ alias gam="/Users/lmartin/bin/gam7/gam"
 alias vdi="ssh -i ~/.ssh/coreweave lmartin@lmartin-1.tenant-coreweave-vdi.coreweave.cloud"
 alias tl="tsh login --proxy=teleport.na.int.coreweave.com"
 
-# TELEPORT CONFIGURATION ==========
-jump(){
-   echo "Loggin in to North America teleport"
-   # Login to North America teleport
-   tsh login  --proxy=teleport.na.int.coreweave.com:443 --auth=okta
-
-   if [ $# -eq 0 ]; then
-       # List Bare Metal Jump Box options
-       bmjb_options=$(tsh ls | grep metal-jump | awk '{print $1}')
-       # Use fzf for interactive selection
-       selected_bmjb=$(echo "$bmjb_options" | fzf --height 20% --prompt "Select a jump box: ")
-   else
-       selected_region=$1
-       echo "Selected region: $selected_region"
-       selected_bmjb=$(tsh ls | grep metal-jump | grep $selected_region | awk '{print $1}')
-   fi
-
-   # Login to selected Bare Metal Jump Box
-   tsh ssh acc@$selected_bmjb
-}
-
 {{ end -}}
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-export NVM_DIR="$HOME/.nvm"
-  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion

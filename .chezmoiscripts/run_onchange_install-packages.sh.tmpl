@@ -84,6 +84,58 @@ if [[ -n "$undeclared" ]]; then
 fi
 rm -f "$brewfile"
 
+{{ else if eq .chezmoi.os "linux" -}}
+# Ubuntu/Debian only for now, but could be extended to other distros in the future
+{{ if lookPath "apt-get" -}}
+
+# Environment state hashes — changes here trigger run_onchange re-execution
+# apt state: {{ output "sh" "-c" "dpkg-query -W -f='${Package}\\n' 2>/dev/null; cat /etc/apt/sources.list.d/*.list 2>/dev/null; true" | sha256sum }}
+
+# Sections to install: universal always, plus work or private (mirrors the macOS logic)
+{{ $sections := list .linux_packages.universal -}}
+{{ if .isWorkComputer -}}
+{{ $sections = append $sections .linux_packages.work -}}
+{{ else -}}
+{{ $sections = append $sections .linux_packages.private -}}
+{{ end -}}
+
+sudo install -m 0755 -d /etc/apt/keyrings
+
+# Repository signing keys
+{{ range $sections -}}
+{{ range .keyrings -}}
+if [[ ! -f /etc/apt/keyrings/{{ .name }}.gpg ]]; then
+{{ if .dearmor -}}
+    curl -fsSL {{ .url | quote }} | sudo gpg --dearmor -o /etc/apt/keyrings/{{ .name }}.gpg
+{{ else -}}
+    curl -fsSL {{ .url | quote }} | sudo tee /etc/apt/keyrings/{{ .name }}.gpg > /dev/null
+{{ end -}}
+    sudo chmod a+r /etc/apt/keyrings/{{ .name }}.gpg
+fi
+{{ end -}}
+{{ end -}}
+
+# apt sources
+{{ range $sections -}}
+{{ range .sources -}}
+echo {{ .line | quote }} | sudo tee /etc/apt/sources.list.d/{{ .name }}.list > /dev/null
+{{ end -}}
+{{ end -}}
+
+sudo apt-get update
+
+# Install apps
+apps=()
+{{ range $sections -}}
+{{ range .apps -}}
+apps+=({{ . | quote }})
+{{ end -}}
+{{ end -}}
+if [[ ${#apps[@]} -gt 0 ]]; then
+    sudo apt-get install -y "${apps[@]}"
+fi
+
+{{ end -}}
 {{ end -}}
 
 # Work GPG key
