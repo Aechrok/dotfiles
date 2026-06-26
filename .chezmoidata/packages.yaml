@@ -75,6 +75,7 @@ packages:
       - "blackbox"
       - "chainctl"
       - "coder"
+      - "codex-app"
       - "doppler"
       - "krew"
       - "pre-commit"
