@@ -137,29 +137,3 @@ fi
 
 {{ end -}}
 {{ end -}}
-
-# Work GPG key
-{{ if eq .chezmoi.os "darwin" -}}
-{{ if .isWorkComputer -}}
-# Unfortunately I did not yet find a way to order scripts so I'm inlining this. Should all be pretty much a no-op anyways.
-# We use the version of the secret to determine if we need to update the secret
-# This needs to be kept in sync with the .gitconfig file
-# Secret version: {{ (onepassword "y4tih67adp6szdurvfhonwkezy" "nlytcyuvecwfsemch5rohs2nwu" "YVWHX4FPNVBEHNNKBHCNO2IJCI").version }}
-
-# Early abort if the key is already added
-if gpg --list-secret-keys | grep -q {{ onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/y4tih67adp6szdurvfhonwkezy/id" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}; then
-    echo "GPG key is present already"
-else
-    # EOF the key into a temporary file
-
-    tmpDir=$(mktemp -d)
-    tmpFile="${tmpDir}/private.key"
-
-    # Manually use the onepassword command to get the file
-    op read --out-file $tmpFile op://nlytcyuvecwfsemch5rohs2nwu/y4tih67adp6szdurvfhonwkezy/private.key --account "YVWHX4FPNVBEHNNKBHCNO2IJCI"
-
-    # Import the key
-    gpg --import $tmpFile
-fi
-{{ end -}}
-{{ end -}}

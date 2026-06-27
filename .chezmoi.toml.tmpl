@@ -1,7 +1,9 @@
 {{- $isWorkComputer := promptBoolOnce . "isWorkComputer" "Is this your work computer" -}}
+{{- $isCoderEnv := promptBoolOnce . "isCoderEnv" "Is this a coder environment" -}}
 
 [data]
     isWorkComputer = {{ $isWorkComputer }}
+    isCoderEnv = {{ $isCoderEnv }}
 
 [hooks.read-source-state.pre]
     command = ".local/share/chezmoi/.install-prerequisites.sh"
@@ -9,3 +11,6 @@
 [git]
     autoCommit = true
     autoPush = true
+
+[diff]
+    exclude = ["scripts"]
