@@ -1,4 +1,5 @@
 {{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
 {{ if .isWorkComputer -}}
 # We use the version of the secret to determine if we need to update the secret
 # This needs to be kept in sync with the .gitconfig file
