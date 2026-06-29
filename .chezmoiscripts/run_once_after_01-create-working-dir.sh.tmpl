@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Check if the repos are already cloned
 
+echo "=== Repo Sync Started"
+
 # Ensure the GitHub CLI is authenticated before any clones. Work repos (and
 # SSO-protected orgs) fail without it. `gh auth status` is gh's own persisted
 # state, so this only triggers a login when actually needed and re-prompts
@@ -121,3 +123,5 @@ if ! test -d $HOME/src/aechrok.github.io; then
     gh repo clone aechrok/aechrok.github.io
 fi
 {{ end -}}
+
+echo "=== Repo Sync Completed"

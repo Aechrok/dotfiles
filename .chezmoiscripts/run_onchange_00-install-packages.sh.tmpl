@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "=== Package Sync Started"
 {{ if eq .chezmoi.os "darwin" -}}
 
 # Environment state hashes — changes here trigger run_onchange re-execution
@@ -137,3 +138,4 @@ fi
 
 {{ end -}}
 {{ end -}}
+echo "=== Package Sync Complete"

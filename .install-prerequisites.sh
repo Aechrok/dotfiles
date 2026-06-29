@@ -15,7 +15,7 @@ op_configured_marker="$state_dir/.1password-cli-configured"
 
 case "$(uname -s)" in
 Darwin)
-    echo "macOS detected — Installing 1Password CLI and prerequisites"
+    echo "OS: MacOS"
     # Install any missing prerequisites. brew is a no-op for already-installed
     # formulae/casks, so this is safe to run every time.
     if ! type op >/dev/null 2>&1; then
@@ -23,7 +23,7 @@ Darwin)
         brew install 1password-cli git wget gnupg gh jq dockutil
     fi
 
-    op --version
+    echo "1Password CLI version: $(op --version)"
 
     # Prompt to enable the 1Password CLI integration exactly once.
     if [ ! -f "$op_configured_marker" ]; then
@@ -39,7 +39,7 @@ Darwin)
     fi
     ;;
 Linux)
-    echo "Linux detected — Installing 1Password CLI"
+    echo "OS: Linux"
     # Only run the (privileged, network-touching) install once. This hook fires
     # on every chezmoi invocation, so guard on `op` already being present —
     # otherwise every run triggers a sudo password prompt and an apt update.
@@ -63,7 +63,7 @@ Linux)
         sudo apt update && sudo apt install -y 1password-cli git wget gnupg gh jq
     fi
 
-    op --version
+    echo "1Password CLI version: $(op --version)"
 
     # Prompt to enable the 1Password CLI integration exactly once.
     if [ ! -f "$op_configured_marker" ]; then
@@ -79,7 +79,7 @@ Linux)
     fi
     ;;
 *)
-    echo "unsupported OS"
+    echo "OS: Unsupported - $(uname -s)"
     exit 1
     ;;
 esac

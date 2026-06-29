@@ -10,7 +10,7 @@ sudo -v
 
 case "$OSTYPE" in
     linux*)
-        echo "Running on Linux"
+        echo "OS: Linux"
         if [ -f /etc/os-release ]; then
             # Load the OS distribution variables
             source /etc/os-release
@@ -38,7 +38,7 @@ case "$OSTYPE" in
         ;;
 
     darwin*)
-        echo "Running on macOS"
+        echo "OS: MacOS"
         # Install XCode Command Line Tools if necessary
         xcode-select --install || echo "XCode already installed"
 
@@ -57,7 +57,7 @@ case "$OSTYPE" in
         brew install chezmoi
         ;;
     *)
-        echo "Unknown Operating System: $OSTYPE"
+        echo "OS: Unknown - $OSTYPE"
         exit 1
         ;;
 esac
