@@ -7,6 +7,7 @@ packages:
     brews:
       - "bash"
       - "chezmoi"
+      - "cloc"
       - "docker-compose"
       - "duti"
       - "figlet"
@@ -110,12 +111,31 @@ linux_packages:
       - name: "1password-archive-keyring"
         url: "https://downloads.1password.com/linux/keys/1password.asc"
         dearmor: true
+      - name: "helm-archive-keyring"
+        url: "https://baltocdn.com"
+        dearmor: true
+      - name: "kubernetes-cli-archive-keyring"
+        url: "https://pkgs.k8s.io/core:/stable:/v1.35/deb/Release.key"
+        dearmor: true
     sources:
       - name: "github-cli"
         line: "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main"
       - name: "1password"
         line: "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$(dpkg --print-architecture) stable main"
+      - name: "helm"
+        line: "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com all main"
+      - name: "kubernetes-cli"
+        line: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.35/deb/ /"
     apps:
+      - "cloc"
+      - "git-lfs"
+      - "gnupg"
+      - "golang-go"
+      - "helm"
+      - "jq"
+      - "kubectx"
+      - "kubectl"
+      - "nmap"
       - "gh"
       - "1password-cli"
 
