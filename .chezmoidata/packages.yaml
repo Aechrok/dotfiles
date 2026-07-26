@@ -98,6 +98,7 @@ packages:
       - "discord"
       - "signal"
       - "twingate"
+      - "windscribe"
     mas:
       - name: "Telegram"
         id: "747648890"
