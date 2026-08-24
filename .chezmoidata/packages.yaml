@@ -42,7 +42,6 @@ packages:
       - "1password-cli"
       - "claude"
       - "claude-code"
-      - "dbeaver-community"
       - "font-hack"
       - "font-hack-nerd-font"
       - "github"
