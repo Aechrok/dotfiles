@@ -6,6 +6,7 @@ echo "=== Package Sync Started"
 # brew leaves: {{ output "brew" "leaves" | sha256sum }}
 # brew casks: {{ output "brew" "list" "--cask" "-1" | sha256sum }}
 # brew taps: {{ output "brew" "tap" | sha256sum }}
+# krew plugins: {{ output "sh" "-c" "if command -v kubectl-krew >/dev/null 2>&1; then kubectl krew list 2>/dev/null || true; fi" | sha256sum }}
 
 # Generate combined Brewfile in a temp file
 brewfile=$(mktemp)
@@ -73,6 +74,29 @@ brew trust {{ . | quote | replace " " "\" \"" }}
 
 # Install packages
 brew bundle --file="$brewfile"
+
+# Install Krew plugins only after the Krew package is available
+krew_plugins=()
+{{ range .packages.universal.krew -}}
+krew_plugins+=({{ . | quote }})
+{{ end -}}
+{{ if .isWorkComputer -}}
+{{ range .packages.work.krew -}}
+krew_plugins+=({{ . | quote }})
+{{ end -}}
+{{ else -}}
+{{ range .packages.private.krew -}}
+krew_plugins+=({{ . | quote }})
+{{ end -}}
+{{ end -}}
+
+if [[ ${#krew_plugins[@]} -gt 0 ]]; then
+    if command -v kubectl-krew &>/dev/null; then
+        kubectl krew install "${krew_plugins[@]}"
+    else
+        echo "WARNING: Krew is not installed; skipping Krew plugins: ${krew_plugins[*]}" >&2
+    fi
+fi
 
 # Warn about and remove undeclared packages
 undeclared=$(brew bundle cleanup --file="$brewfile" 2>/dev/null)

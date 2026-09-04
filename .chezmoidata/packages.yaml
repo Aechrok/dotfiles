@@ -63,6 +63,7 @@ packages:
         id: "361304891"
       - name: "Xcode"
         id: "497799835"
+    krew: []
 
   work:
     taps:
@@ -89,6 +90,9 @@ packages:
       - "loom"
       - "meetingbar"
     mas: []
+    krew:
+      - "klock"
+      - "virt"
 
   private:
     taps: []
@@ -101,6 +105,7 @@ packages:
     mas:
       - name: "Telegram"
         id: "747648890"
+    krew: []
 
 
 linux_packages:
