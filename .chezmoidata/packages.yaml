@@ -23,6 +23,7 @@ packages:
       - "kubeconform"
       - "kubectx"
       - "kubernetes-cli"
+      - "krew"
       - "kustomize"
       - "mas"
       - "nmap"
@@ -63,7 +64,9 @@ packages:
         id: "361304891"
       - name: "Xcode"
         id: "497799835"
-    krew: []
+    krew:
+      - "klock"
+      - "virt"
 
   work:
     taps:
@@ -78,7 +81,6 @@ packages:
       - "coder"
       - "doppler"
       - "go-task"
-      - "krew"
       - "pre-commit"
       - "src-cli"
       - "virtctl"
@@ -90,9 +92,7 @@ packages:
       - "loom"
       - "meetingbar"
     mas: []
-    krew:
-      - "klock"
-      - "virt"
+    krew: []
 
   private:
     taps: []
