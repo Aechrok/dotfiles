@@ -80,6 +80,7 @@ packages:
       - "chainctl"
       - "coder"
       - "doppler"
+      - "fnm"
       - "go-task"
       - "pre-commit"
       - "src-cli"
