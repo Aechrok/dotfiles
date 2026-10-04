@@ -11,6 +11,9 @@ export DOPPLER_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/6xaaq6k5
 export SRC_ENDPOINT=https://coreweave.sourcegraphcloud.com/
 export SRC_ACCESS_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/ztxo2fvc3wp7oofvmywod5mznm/credential" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
 {{ end -}}
+{{ if not .isWorkComputer -}}
+export VULTR_INFERENCE_API_KEY={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/ztxo2fvc3wp7oofvmywod5mznm/credential" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+{{ end -}}
 
 
 alias sc="source ~/.zshrc"
