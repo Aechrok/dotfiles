@@ -28,6 +28,7 @@ packages:
       - "mas"
       - "nmap"
       - "opentofu"
+      - "pi-coding-agent"
       - "python@3.14"
       - "s3cmd"
       - "sshpass"
