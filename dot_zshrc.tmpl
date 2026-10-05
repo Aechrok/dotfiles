@@ -3,6 +3,7 @@ PATH="$HOME/.scripts:${KREW_ROOT:-$HOME/.krew}/bin:/opt/homebrew/bin:/opt/homebr
 PATH="$(go env GOPATH)/bin:$PATH"
 
 export KUBECONFIG=$(ls ~/.kube | grep conf | awk -v d="$HOME/.kube/" '{ printf "%s%s:", d,$0}')
+export NGROK_AUTHTOKEN={{onepasswordRead "op://lammc3e2zlgjtsr2lmg6c3nd6q/dsuc2hlfxoyxdgqtfgqq3a4jge/credential" "II4A6DZ6H5H3XBDHVFWLX4MMTA" }}
 export DOCKER_DEFAULT_PLATFORM=linux/arm64
 
 {{ if .isWorkComputer -}}
