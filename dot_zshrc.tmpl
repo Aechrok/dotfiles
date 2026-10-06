@@ -11,7 +11,8 @@ export DOCKER_DEFAULT_PLATFORM=linux/arm64
 export DOPPLER_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/6xaaq6k54gduufe277cwk3hhmm/credential" "YVWHX4FPNVBEHNNKBHCNO2IJCI"}}
 export SRC_ENDPOINT=https://coreweave.sourcegraphcloud.com/
 export SRC_ACCESS_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/ztxo2fvc3wp7oofvmywod5mznm/credential" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
-export OMLX_API_KEY="Authorization: Bearer {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/njjli6uvqff76iunjmr44ja62e/credential" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}"
+export NEXUSAPI={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/ercf7i57pmkqrvrvaehh6ckw34/credential" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+export OMLX_API_KEY="{{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/njjli6uvqff76iunjmr44ja62e/credential" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}"
 {{ end -}}
 {{ if not .isWorkComputer -}}
 export VULTR_INFERENCE_API_KEY={{onepasswordRead "op://lammc3e2zlgjtsr2lmg6c3nd6q/uornyxqbbmbfw2jc6ophztzd2m/credential" "II4A6DZ6H5H3XBDHVFWLX4MMTA" }}
@@ -50,11 +51,11 @@ _omlx_up() {
 }
 
 _omlx_down() {
-    _message 'Stop oMLX inference server'
+    _message -r 'Stop oMLX inference server'
 }
 
 _omlx_status() {
-    _message 'Check oMLX server status'
+    _message -r 'Check oMLX server status'
 }
 
 compdef _omlx_up omlx-up
