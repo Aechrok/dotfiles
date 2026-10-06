@@ -11,6 +11,7 @@ export DOCKER_DEFAULT_PLATFORM=linux/arm64
 export DOPPLER_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/6xaaq6k54gduufe277cwk3hhmm/credential" "YVWHX4FPNVBEHNNKBHCNO2IJCI"}}
 export SRC_ENDPOINT=https://coreweave.sourcegraphcloud.com/
 export SRC_ACCESS_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/ztxo2fvc3wp7oofvmywod5mznm/credential" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+export OMLX_API_KEY="Authorization: Bearer {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/njjli6uvqff76iunjmr44ja62e/credential" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}"
 {{ end -}}
 {{ if not .isWorkComputer -}}
 export VULTR_INFERENCE_API_KEY={{onepasswordRead "op://lammc3e2zlgjtsr2lmg6c3nd6q/uornyxqbbmbfw2jc6ophztzd2m/credential" "II4A6DZ6H5H3XBDHVFWLX4MMTA" }}
@@ -34,6 +35,31 @@ alias kl="kubectl logs"
 alias listen="lsof -i -P | grep LISTEN | grep"
 alias listen-all="lsof -i -P | grep LISTEN"
 alias virt="virtctl console"
+
+# oMLX completions
+if (( ! $+functions[compdef] )); then
+    autoload -Uz compinit
+    compinit
+fi
+
+_omlx_up() {
+    _arguments \
+        '(-p --port)'{-p,--port}'[Port to bind (default: 11436)]:port:' \
+        '(-m --model-dir)'{-m,--model-dir}'[Model directory]:model directory:_directories' \
+        '(-h --help)'{-h,--help}'[Show help]'
+}
+
+_omlx_down() {
+    _message 'Stop oMLX inference server'
+}
+
+_omlx_status() {
+    _message 'Check oMLX server status'
+}
+
+compdef _omlx_up omlx-up
+compdef _omlx_down omlx-down
+compdef _omlx_status omlx-status
 
 {{ if .isWorkComputer -}}
 alias cwic="KUBECONFIG=/Users/lmartin/.kube/cwde12-coreenv-config.yaml cwic"

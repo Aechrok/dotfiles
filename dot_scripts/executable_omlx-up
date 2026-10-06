@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+# Start oMLX inference server (default port: 11436).
+# Set OMLX_API_KEY before running; generate a key with: openssl rand -hex 12
+
+port=11436
+model_dir="$HOME/.omlx/models"
+log_file="$HOME/.omlx/logs/server.log"
+api_key="${OMLX_API_KEY:-}"
+
+usage() {
+    cat <<'EOF'
+Usage: omlx-up [-p PORT] [-m DIRECTORY] [-h]
+
+  -p, --port PORT            Port to bind (default: 11436)
+  -m, --model-dir DIRECTORY  Model directory (default: ~/.omlx/models)
+  -h, --help                 Show help
+
+Export OMLX_API_KEY before starting the server.
+EOF
+}
+
+while (( $# > 0 )); do
+    case "$1" in
+        -p|--port|-m|--model-dir)
+            if (( $# < 2 )) || [[ -z "$2" || "$2" == -* ]]; then
+                echo "Missing value for $1." >&2
+                exit 1
+            fi
+            case "$1" in
+                -p|--port) port="$2" ;;
+                -m|--model-dir) model_dir="$2" ;;
+            esac
+            shift 2
+            ;;
+        --port=*)
+            port="${1#*=}"
+            shift
+            ;;
+        --model-dir=*)
+            model_dir="${1#*=}"
+            shift
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown argument: $1" >&2
+            usage >&2
+            exit 1
+            ;;
+    esac
+done
+
+if [[ ! "$port" =~ ^[0-9]{1,5}$ ]]; then
+    echo "Port must be an integer between 1 and 65535." >&2
+    exit 1
+fi
+port=$((10#$port))
+if (( port < 1 || port > 65535 )); then
+    echo "Port must be an integer between 1 and 65535." >&2
+    exit 1
+fi
+
+if [[ -z "$model_dir" ]]; then
+    echo "Model directory must not be empty." >&2
+    exit 1
+fi
+
+if [[ -z "$api_key" ]]; then
+    echo "Set OMLX_API_KEY before running omlx-up." >&2
+    exit 1
+fi
+
+if pgrep -f '[o]mlx serve' >/dev/null 2>&1; then
+    echo "oMLX is already running."
+    exit 1
+fi
+
+mkdir -p "${log_file%/*}" "$model_dir" || exit 1
+
+echo "Starting oMLX on port $port..."
+
+nohup omlx serve \
+    --model-dir "$model_dir" \
+    --port "$port" \
+    --api-key "$api_key" \
+    </dev/null >>"$log_file" 2>&1 &
+pid=$!
+
+sleep 2
+
+if kill -0 "$pid" 2>/dev/null; then
+    echo "oMLX started (PID $pid)"
+    echo "Admin UI: http://localhost:$port/admin"
+else
+    echo "oMLX failed to start. Check logs: tail -30 \"$log_file\"" >&2
+    exit 1
+fi

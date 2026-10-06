@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# Check oMLX server status.
+
+port=11436
+log_file="$HOME/.omlx/logs/server.log"
+
+echo "=== Process ==="
+if pids=$(pgrep -f '[o]mlx serve'); then
+    echo "Running (PID $pids)"
+else
+    echo "Not running"
+fi
+
+echo
+echo "=== HTTP health ==="
+if curl -sf --max-time 5 "http://127.0.0.1:$port/health"; then
+    printf '\nOK\n'
+else
+    printf '\nNot responding\n'
+fi
+
+echo
+echo "=== Last 30 log lines ==="
+if [[ -f "$log_file" ]]; then
+    tail -n 30 "$log_file"
+else
+    echo "No log file found: $log_file"
+fi

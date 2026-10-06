@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Stop oMLX inference server.
+
+if ! pgrep -f '[o]mlx serve' >/dev/null 2>&1; then
+    echo "oMLX is not running."
+    exit 0
+fi
+
+echo "Stopping oMLX..."
+pkill -TERM -f '[o]mlx serve'
+
+waited=0
+while pgrep -f '[o]mlx serve' >/dev/null 2>&1 && (( waited < 5 )); do
+    sleep 1
+    waited=$((waited + 1))
+done
+
+if pgrep -f '[o]mlx serve' >/dev/null 2>&1; then
+    echo "Did not stop cleanly - sending SIGKILL"
+    pkill -KILL -f '[o]mlx serve'
+else
+    echo "oMLX stopped."
+fi
