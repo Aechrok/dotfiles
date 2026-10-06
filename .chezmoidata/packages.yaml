@@ -72,7 +72,7 @@ packages:
   work:
     taps:
       - "chainguard-dev/tap"
-      - "jundot/omlx"
+      - "jundot/omlx https://github.com/jundot/omlx"
       - "sourcegraph/src-cli"
     brews:
       - "argocd"
