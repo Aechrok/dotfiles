@@ -72,6 +72,7 @@ packages:
   work:
     taps:
       - "chainguard-dev/tap"
+      - "jundot/omlx"
       - "sourcegraph/src-cli"
     brews:
       - "argocd"
@@ -83,6 +84,7 @@ packages:
       - "doppler"
       - "fnm"
       - "go-task"
+      - "omlx"
       - "pre-commit"
       - "src-cli"
       - "virtctl"
