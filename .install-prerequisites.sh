@@ -1,6 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
+# chezmoi copies this hook's stdout onto its own stdout, so anything printed
+# here ends up glued in front of machine-readable output (e.g. `chezmoi data | jq`
+# dies on the "OS: MacOS" line). Everything this script prints is progress
+# chatter, so redirect all of it - including brew/apt noise - to stderr. A TTY
+# interleaves both streams, so interactive output is unchanged.
+exec 1>&2
+
 # This runs in chezmoi's read-source-state.pre hook, i.e. on *every* chezmoi
 # invocation, because templates read secrets from 1Password during source-state
 # evaluation. So `op` must exist and the desktop CLI integration must be active

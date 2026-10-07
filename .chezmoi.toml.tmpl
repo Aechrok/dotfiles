@@ -1,9 +1,23 @@
 {{- $isWorkComputer := promptBoolOnce . "isWorkComputer" "Is this your work computer" -}}
 {{- $isCoderEnv := promptBoolOnce . "isCoderEnv" "Is this a coder environment" -}}
 
+{{- /* Hardware facts, captured once at `chezmoi init`. */ -}}
+{{- /* `trim` is mandatory: `output` keeps the trailing newline and `int` */ -}}
+{{- /* silently yields 0 without it. */ -}}
+{{- $model := output "sysctl" "-n" "hw.model" | trim -}}
+{{- $cpu := output "sysctl" "-n" "machdep.cpu.brand_string" | trim -}}
+{{- $memoryGb := div (output "sysctl" "-n" "hw.memsize" | trim | int) 1073741824 -}}
+{{- $cores := output "sysctl" "-n" "hw.ncpu" | trim | int -}}
+
 [data]
     isWorkComputer = {{ $isWorkComputer }}
     isCoderEnv = {{ $isCoderEnv }}
+
+    [data.machine]
+    model = {{ $model | quote }}
+    cpu = {{ $cpu | quote }}
+    memoryGb = {{ $memoryGb }}
+    cores = {{ $cores }}
 
 [hooks.read-source-state.pre]
     command = ".local/share/chezmoi/.install-prerequisites.sh"
