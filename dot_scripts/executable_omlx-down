@@ -2,23 +2,26 @@
 
 # Stop oMLX inference server.
 
-if ! pgrep -f '[o]mlx serve' >/dev/null 2>&1; then
+# oMLX changes its process title after starting.
+process_pattern='(^|/)([o]mlx serve|[o]mlx-server)([[:space:]]|$)'
+
+if ! pgrep -f "$process_pattern" >/dev/null 2>&1; then
     echo "oMLX is not running."
     exit 0
 fi
 
 echo "Stopping oMLX..."
-pkill -TERM -f '[o]mlx serve'
+pkill -TERM -f "$process_pattern"
 
 waited=0
-while pgrep -f '[o]mlx serve' >/dev/null 2>&1 && (( waited < 5 )); do
+while pgrep -f "$process_pattern" >/dev/null 2>&1 && (( waited < 5 )); do
     sleep 1
     waited=$((waited + 1))
 done
 
-if pgrep -f '[o]mlx serve' >/dev/null 2>&1; then
+if pgrep -f "$process_pattern" >/dev/null 2>&1; then
     echo "Did not stop cleanly - sending SIGKILL"
-    pkill -KILL -f '[o]mlx serve'
+    pkill -KILL -f "$process_pattern"
 else
     echo "oMLX stopped."
 fi

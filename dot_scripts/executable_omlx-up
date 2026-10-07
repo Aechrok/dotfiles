@@ -7,6 +7,8 @@ port=11436
 model_dir="$HOME/.omlx/models"
 log_file="$HOME/.omlx/logs/server.log"
 api_key="${OMLX_API_KEY:-}"
+# oMLX changes its process title after starting.
+process_pattern='(^|/)([o]mlx serve|[o]mlx-server)([[:space:]]|$)'
 
 usage() {
     cat <<'EOF'
@@ -68,13 +70,13 @@ if [[ -z "$model_dir" ]]; then
     exit 1
 fi
 
-if [[ -z "$api_key" ]]; then
-    echo "Set OMLX_API_KEY before running omlx-up." >&2
-    exit 1
+if pids=$(pgrep -f "$process_pattern"); then
+    echo "oMLX is already running (PID $pids)."
+    exit 0
 fi
 
-if pgrep -f '[o]mlx serve' >/dev/null 2>&1; then
-    echo "oMLX is already running."
+if [[ -z "$api_key" ]]; then
+    echo "Set OMLX_API_KEY before running omlx-up." >&2
     exit 1
 fi
 

@@ -4,9 +4,11 @@
 
 port=11436
 log_file="$HOME/.omlx/logs/server.log"
+# oMLX changes its process title after starting.
+process_pattern='(^|/)([o]mlx serve|[o]mlx-server)([[:space:]]|$)'
 
 echo "=== Process ==="
-if pids=$(pgrep -f '[o]mlx serve'); then
+if pids=$(pgrep -f "$process_pattern"); then
     echo "Running (PID $pids)"
 else
     echo "Not running"
