@@ -9,10 +9,11 @@ echo "=== Package Sync Started"
 # krew plugins: {{ output "sh" "-c" "if command -v kubectl-krew >/dev/null 2>&1; then kubectl krew list 2>/dev/null || true; fi" | sha256sum }}
 
 # Generate combined Brewfile in a temp file
-brewfile=$(mktemp)
+brewfile=$(mktemp) || exit 1
+trap 'rm -f "$brewfile"' EXIT
 cat > "$brewfile" <<BREWEOF
 {{ range .packages.universal.taps -}}
-tap {{ . | quote | replace " " "\", \"" }}
+tap {{ . | quote | replace " " "\", \"" }}, trusted: true
 {{ end -}}
 {{ range .packages.universal.brews -}}
 brew {{ . | quote }}
@@ -26,7 +27,7 @@ mas {{ .name | quote }}, id: {{ .id }}
 
 {{ if .isWorkComputer -}}
 {{ range .packages.work.taps -}}
-tap {{ . | quote | replace " " "\", \"" }}
+tap {{ . | quote | replace " " "\", \"" }}, trusted: true
 {{ end -}}
 {{ range .packages.work.brews -}}
 brew {{ . | quote }}
@@ -41,7 +42,7 @@ mas {{ .name | quote }}, id: {{ .id }}
 {{ else -}}
 
 {{ range .packages.private.taps -}}
-tap {{ . | quote | replace " " "\", \"" }}
+tap {{ . | quote | replace " " "\", \"" }}, trusted: true
 {{ end -}}
 {{ range .packages.private.brews -}}
 brew {{ . | quote }}
@@ -73,7 +74,10 @@ brew trust {{ . | quote | replace " " "\" \"" }}
 {{ end -}}
 
 # Install packages
-brew bundle --file="$brewfile"
+if ! brew bundle --file="$brewfile"; then
+    echo "Package installation failed; skipping cleanup." >&2
+    exit 1
+fi
 
 # Install Krew plugins only after the Krew package is available
 krew_plugins=()
@@ -107,7 +111,6 @@ if [[ -n "$undeclared" ]]; then
     brew bundle cleanup --force --file="$brewfile"
     brew autoremove
 fi
-rm -f "$brewfile"
 
 {{ else if eq .chezmoi.os "linux" -}}
 # Ubuntu/Debian only for now, but could be extended to other distros in the future

@@ -84,7 +84,7 @@ packages:
       - "doppler"
       - "fnm"
       - "go-task"
-      - "omlx"
+      - "jundot/omlx/omlx"
       - "pre-commit"
       - "src-cli"
       - "virtctl"
