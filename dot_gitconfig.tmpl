@@ -7,7 +7,14 @@
 	name = Lee Martin
 	email = lee@leemartin.us
 {{ if eq .chezmoi.os "darwin" -}}
-	signingkey = {{onepasswordRead "op://lammc3e2zlgjtsr2lmg6c3nd6q/k4omykdkvbpgjeevp5j2naf27i/public key" "II4A6DZ6H5H3XBDHVFWLX4MMTA" }}
+{{ if .isWorkComputer -}}
+	# Work public key, matching the managed coreweave.pub file.
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICVpO0xEQR3a9LcLdO6RNDRP71AiHOLifx8U/nnZu67M
+{{ else -}}
+	# Public key of the lee@leemartin.us SSH Key item in the Dotfiles vault.
+	# Update this public key if the signing key is rotated in 1Password.
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHdAGH3xGToy8x+KPs6jerRIrF5QJ8lKbwEpd5hzHzrQ
+{{ end -}}
 {{ end -}}
 [gpg]
 	format = ssh
