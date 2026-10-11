@@ -1,6 +1,7 @@
 #!/bin/bash
 echo "=== Package Sync Started"
 {{ if eq .chezmoi.os "darwin" -}}
+{{ $installOmlx := and .isWorkComputer (ge (int .machine.memoryGb) 128) -}}
 
 # Environment state hashes — changes here trigger run_onchange re-execution
 # brew leaves: {{ output "brew" "leaves" | sha256sum }}
@@ -54,6 +55,14 @@ cask {{ . | quote }}
 mas {{ .name | quote }}, id: {{ .id }}
 {{ end -}}
 {{ end -}}
+{{ if $installOmlx -}}
+{{ range .packages.omlx.taps -}}
+tap {{ . | quote | replace " " "\", \"" }}, trusted: true
+{{ end -}}
+{{ range .packages.omlx.brews -}}
+brew {{ . | quote }}
+{{ end -}}
+{{ end -}}
 BREWEOF
 
 # Tap and trust all taps
@@ -74,6 +83,13 @@ brew trust {{ . | quote | replace " " "\" \"" }}
 {{ end -}}
 
 # Install packages
+{{ if $installOmlx -}}
+{{ range .packages.omlx.taps -}}
+brew tap --force {{ . | quote | replace " " "\" \"" }}
+brew trust {{ . | quote | replace " " "\" \"" }}
+{{ end -}}
+{{ end -}}
+
 if ! brew bundle --file="$brewfile"; then
     echo "Package installation failed; skipping cleanup." >&2
     exit 1

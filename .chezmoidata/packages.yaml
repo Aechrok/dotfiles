@@ -72,7 +72,6 @@ packages:
   work:
     taps:
       - "chainguard-dev/tap"
-      - "jundot/omlx https://github.com/jundot/omlx"
       - "sourcegraph/src-cli"
     brews:
       - "argocd"
@@ -84,7 +83,6 @@ packages:
       - "doppler"
       - "fnm"
       - "go-task"
-      - "jundot/omlx/omlx"
       - "pre-commit"
       - "src-cli"
       - "virtctl"
@@ -97,6 +95,12 @@ packages:
       - "meetingbar"
     mas: []
     krew: []
+
+  omlx:
+    taps:
+      - "jundot/omlx https://github.com/jundot/omlx"
+    brews:
+      - "jundot/omlx/omlx"
 
   private:
     taps: []
