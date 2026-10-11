@@ -45,6 +45,10 @@ detect_profile() {
 # Scalar list items are emitted as-is; mapping items (e.g. mas entries) emit their .name.
 extract_list() {
     local subsection="$1" key="$2"
+    if [[ "$key" == brews || "$key" == taps ]]; then
+        chezmoi --source "$SCRIPT_DIR" execute-template "{{ includeTemplate \"eligible-packages\" (dict \"entries\" .packages.${subsection}.${key} \"os\" .chezmoi.os \"memory\" (dig \"machine\" \"memoryGb\" 0 .)) }}" | jq -r '.[]'
+        return
+    fi
     yq -r ".packages.${subsection}.${key}[]? | (.name // .)" "$PACKAGES_YAML"
 }
 

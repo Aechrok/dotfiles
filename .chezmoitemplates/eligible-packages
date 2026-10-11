@@ -1,0 +1,25 @@
+{{- /* Strings and single-key maps are accepted. Missing/empty requirements are unrestricted. */ -}}
+{{- $names := list -}}
+{{- range .entries -}}
+  {{- $name := . -}}
+  {{- $requirements := dict -}}
+  {{- if kindIs "map" . -}}
+    {{- if ne (len .) 1 -}}{{- fail "Package maps must contain exactly one package name" -}}{{- end -}}
+    {{- range $key, $value := . -}}
+      {{- $name = $key -}}
+      {{- $requirements = get (default dict $value) "requirements" | default dict -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range $key, $value := $requirements -}}
+    {{- if not (has $key (list "os" "memory")) -}}
+      {{- fail (printf "Unknown requirement %s for %s" $key $name) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $requiredOs := get $requirements "os" -}}
+  {{- $osMatches := or (not $requiredOs) (eq $requiredOs $.os) -}}
+  {{- $memoryMatches := ge (int $.memory) (int (get $requirements "memory" | default 0)) -}}
+  {{- if and $osMatches $memoryMatches -}}
+    {{- $names = append $names $name -}}
+  {{- end -}}
+{{- end -}}
+{{- $names | toJson -}}
