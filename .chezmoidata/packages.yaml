@@ -106,7 +106,8 @@ packages:
 
   private:
     taps: []
-    brews: []
+    brews:
+    - "talosctl"
     casks:
     - "discord"
     - "signal"
