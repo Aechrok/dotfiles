@@ -31,3 +31,22 @@ Entries remain scoped to their universal, work, or private section. Use matching
 requirements on a package's tap when it should also be conditional. Audit and
 cleanup use the same requirements as installation; ineligible packages can be
 removed by cleanup. Unknown requirement names cause an error.
+
+## Git signing
+
+Git uses the 1Password SSH signer on macOS. The managed
+`~/.config/1Password/ssh/agent.toml` exposes SSH Key items only from Employee on
+work computers and from Dotfiles and Personal on personal computers, based on
+`isWorkComputer`. This replaces 1Password's default vault selection.
+The matching private signing key must be stored as an SSH Key item in 1Password;
+downloading a key file or importing a GPG key does not make it available to this
+signer.
+
+Apply the agent config with:
+
+```bash
+chezmoi apply ~/.config/1Password/ssh/agent.toml
+```
+
+Then lock and unlock 1Password so it recognizes the configuration. Enable the
+SSH agent in 1Password's Developer settings if it is not already enabled.
