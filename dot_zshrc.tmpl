@@ -37,6 +37,9 @@ alias kl="kubectl logs"
 alias listen="lsof -i -P | grep LISTEN | grep"
 alias listen-all="lsof -i -P | grep LISTEN"
 alias virt="virtctl console"
+{{ if not .isWorkComputer -}}
+alias t="talosctl"
+{{ end -}}
 
 # oMLX completions
 if (( ! $+functions[compdef] )); then
