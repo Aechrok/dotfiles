@@ -4,7 +4,7 @@ PATH="$(go env GOPATH)/bin:$PATH"
 
 export KUBECONFIG=$(ls ~/.kube | grep conf | awk -v d="$HOME/.kube/" '{ printf "%s%s:", d,$0}')
 {{ if not .isWorkComputer -}}
-export TALOSCONFIG=$(ls ~/.kube | grep talos | awk -v d="$HOME/.kube/" '{ printf "%s%s:", d,$0}')
+export TALOSCONFIG="$HOME/.talos/config"
 {{ end -}}
 export NGROK_AUTHTOKEN={{onepasswordRead "op://lammc3e2zlgjtsr2lmg6c3nd6q/lh4gfkoeakzzm2bhmxdglbix5e/credential" "II4A6DZ6H5H3XBDHVFWLX4MMTA" }}
 export DOCKER_DEFAULT_PLATFORM=linux/arm64
