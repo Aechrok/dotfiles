@@ -98,6 +98,7 @@ fi
 
 if ! test -d $HOME/src/coreweave/devx/cw-eng-cli; then
     gh repo clone coreweave/cw-eng-cli
+    gh api -H 'Accept: application/vnd.github.v3.raw' "repos/coreweave/cw-eng-cli/contents/scripts/install.sh" | bash
 fi
 
 if ! test -d $HOME/src/coreweave/devx/devx-charts; then
