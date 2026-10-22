@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# -- Script to run basic connectivity checks on an IP
+# -- REQUIRES: nmap
+# Updates:
+# 2017/03/16 - Added port 10000 for Webmin
+
+# Cmdline Parameters ------------
+IP=$1;
+
+# Define Colors ----------------
+RESTORE='\033[0m';
+RED='\033[00;31m';
+GREEN='\033[00;32m';
+YELLOW='\033[00;33m';
+
+
+# Fn To Echo Commands To Terminal:
+showcommand() { echo "\$ $@" ; "$@" ; }
+
+# Ping -------------------
+printf "\n${YELLOW}----[ Ping ] ----${RESTORE}\n";
+ping -c 1 "$IP" > /dev/null;
+if [ $? -eq 0 ]; then
+ echo -e "${GREEN}Ping $IP is OK${RESTORE}";
+
+ printf "\n";
+ # Check Response Times
+ ping -c3 "$IP" | tail -n 2
+
+
+else
+ echo -e "${RED}Ping $IP Failed${RESTORE}";
+fi
+
+
+# Check Ports For SSH, RDP, & Cpanel
+printf "\n${YELLOW}----[ Checking SSH, RDP, cPanel Access Ports ]----${RESTORE}\n";
+nmap -Pn -p 22,3389,2083,2087 --reason $IP | egrep "^[0-9]";
+
+# Check Ports For Services -------
+printf "\n${YELLOW}----[ Checking Common Service Ports ]----${RESTORE}\n";
+nmap -Pn -p 20,21,25,53,80,143,443,587,993,3306,4505,4506,5000,5500,8080,10000,10350,11806 --reason $IP | egrep "^[0-9]";
+
+# Check SSH Login
+printf "\n${YELLOW}----[ Checking SSH ]----${RESTORE}\n";
+
+# Check for SSH Status------------------
+SSH_STATUS=`nmap -Pn -p 22 --reason $IP | egrep -o "(open|closed|filtered)"`;
+
+if [ "$SSH_STATUS" == "open" ]
+then
+ssh -v -o "BatchMode=yes" -o "ConnectTimeout=3" -o "StrictHostKeyChecking=no" root@$IP 2>&1 | grep -i connect;
+else
+printf "${RED}N/A - SSH Port is $SSH_STATUS${RESTORE}\n";
+fi
+
+printf "${YELLOW}-------------\n\n${RESTORE}";

@@ -1,0 +1,45 @@
+{{ if .isWorkComputer -}}
+[default]
+ignore_configure_endpoint_urls = true
+
+[profile {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/ftamvlwnfwdk6wepwpxkrvcjbq/profile-name" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}]
+endpoint_url = {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/ftamvlwnfwdk6wepwpxkrvcjbq/endpoint-url" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+s3 =
+    addressing_style = virtual
+
+    signature_version = s3v4
+
+[profile {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/mwqpjr5pavexusqswoqz3pa3z4/profile-name" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}]
+endpoint_url = {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/mwqpjr5pavexusqswoqz3pa3z4/endpoint-url" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+s3 =
+    addressing_style = virtual
+
+    signature_version = s3v4
+
+[profile {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/xeg5n4euxqynkcdls2dx7rgwmm/profile-name" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}]
+region = {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/xeg5n4euxqynkcdls2dx7rgwmm/region" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+output = json
+
+[{{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/xeg5n4euxqynkcdls2dx7rgwmm/profile-name" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}]
+aws_access_key_id = {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/xeg5n4euxqynkcdls2dx7rgwmm/username" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+aws_secret_access_key = {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/xeg5n4euxqynkcdls2dx7rgwmm/password" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+
+[profile {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/brwjiiaslhubdqoluo3evswkai/profile-name" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}]
+sso_session = {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/brwjiiaslhubdqoluo3evswkai/sso-session" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+sso_account_id = {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/brwjiiaslhubdqoluo3evswkai/sso-account-id" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+sso_role_name = {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/brwjiiaslhubdqoluo3evswkai/sso-role-name" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+region = {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/brwjiiaslhubdqoluo3evswkai/region" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+output = json
+
+[sso-session {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/2l67i4kksxpk3n2gwjrwuph2aq/profile-name" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}]
+sso_start_url = {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/2l67i4kksxpk3n2gwjrwuph2aq/sso-start-url" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+sso_region = {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/2l67i4kksxpk3n2gwjrwuph2aq/sso-region" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+sso_registration_scopes = sso:account:access
+
+[profile {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/a6o4tpvbyn3bcv5iowmu33jxde/profile-name" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}]
+endpoint_url = {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/a6o4tpvbyn3bcv5iowmu33jxde/endpoint-url" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+s3 =
+    addressing_style = virtual
+
+    signature_version = s3v4
+{{ end -}}

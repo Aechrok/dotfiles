@@ -1,0 +1,24 @@
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[user]
+	name = Lee Martin
+	email = lee@leemartin.us
+{{ if eq .chezmoi.os "darwin" -}}
+{{ if .isWorkComputer -}}
+	# Work public key, matching the managed .pub file.
+	signingkey = {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/2cnzu4jdjq63e43xnu4y4vhywy/public-key" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+{{ else -}}
+	# Public key of the lee@leemartin.us SSH Key item in the Dotfiles vault.
+	# Update this public key if the signing key is rotated in 1Password.
+	signingkey = {{onepasswordRead "op://lammc3e2zlgjtsr2lmg6c3nd6q/k4omykdkvbpgjeevp5j2naf27i/public key" "II4A6DZ6H5H3XBDHVFWLX4MMTA" }}
+{{ end -}}
+{{ end -}}
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+[commit]
+	gpgsign = true

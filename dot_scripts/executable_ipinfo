@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# --------------------
+# IPinfo - Script to get info on an IP address
+
+# DEPENDENCY:
+#  requires jq package to pretty print the 
+#  json that is returned from the GEOIP lookup
+
+# USAGE:
+#  ipinfo <IP> [extra]
+
+# PARAS:
+#  IP = Required. Target IP address
+#  Extra = Optional. Lookup additional info when set.  
+#          If set to "trace" do a traceroute in addition to lookups
+
+# ---------------------
+
+
+# Look up the IP against the http://ipinfo.io service
+# and pretty print results
+echo;
+echo ----- [GeoLocation] -----
+curl -s ipinfo.io/"$1" | jq;
+
+# Parse owner information from Whois
+if ! [ -z $2 ]; then
+echo;
+echo -----[Whois] -----
+whois "$1" | egrep -i "(organization|name|address|city|state|postal|server)";
+fi
+
+# Run Traceroute To the IP
+if [ "$2" == "trace" ]; then
+echo;
+echo ----- [Trace] -----
+traceroute "$1";
+fi

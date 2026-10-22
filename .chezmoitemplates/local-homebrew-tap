@@ -1,0 +1,22 @@
+# Keep the tap itself outside Git so brew update cannot modify the dotfiles checkout.
+local_tap="$(brew --repository)/Library/Taps/local/homebrew-dotfiles" || exit 1
+local_casks={{ joinPath .chezmoi.sourceDir "Casks" | quote }}
+if [[ ! -d "$local_casks" ]]; then
+    echo "Local cask source is missing: $local_casks" >&2
+    exit 1
+fi
+if [[ -L "$local_tap" || -e "$local_tap/.git" ]]; then
+    echo "Expected a non-Git directory for the local tap: $local_tap" >&2
+    exit 1
+fi
+mkdir -p "$local_tap" || exit 1
+if [[ -L "$local_tap/Casks" ]]; then
+    if [[ "$(readlink "$local_tap/Casks")" != "$local_casks" ]]; then
+        ln -sfn "$local_casks" "$local_tap/Casks" || exit 1
+    fi
+elif [[ -e "$local_tap/Casks" ]]; then
+    echo "Refusing to replace existing cask files: $local_tap/Casks" >&2
+    exit 1
+else
+    ln -s "$local_casks" "$local_tap/Casks" || exit 1
+fi

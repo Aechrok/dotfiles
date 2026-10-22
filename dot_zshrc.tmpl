@@ -1,0 +1,100 @@
+# #################################
+# Environment Variables and Paths #
+# #################################
+
+# Environment variables and paths for all my computers
+PATH="$HOME/.scripts:${KREW_ROOT:-$HOME/.krew}/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/opt/homebrew/bin:/usr/local/bin:/usr/local/sbin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+PATH="$(go env GOPATH)/bin:$PATH"
+export KUBECONFIG=$(ls ~/.kube | grep conf | awk -v d="$HOME/.kube/" '{ printf "%s%s:", d,$0}')
+export NGROK_AUTHTOKEN={{onepasswordRead "op://lammc3e2zlgjtsr2lmg6c3nd6q/lh4gfkoeakzzm2bhmxdglbix5e/credential" "II4A6DZ6H5H3XBDHVFWLX4MMTA" }}
+export DOCKER_DEFAULT_PLATFORM=linux/arm64
+export POCKET_API_KEY={{onepasswordRead "op://lammc3e2zlgjtsr2lmg6c3nd6q/l7yzczkitjcxktd27zwapvlsb4/credential" "II4A6DZ6H5H3XBDHVFWLX4MMTA" }}
+{{ if and (eq .chezmoi.os "darwin") (ge (int (dig "machine" "memoryGb" 0 .)) 128) -}}
+export OMLX_API_KEY={{onepasswordRead "op://lammc3e2zlgjtsr2lmg6c3nd6q/4ztymmuvi2lpp2wvbidtmp3lre/credential" "II4A6DZ6H5H3XBDHVFWLX4MMTA" }}
+
+{{ end -}}
+
+{{ if not .isWorkComputer -}}
+# Environment variables and paths for my personal computers
+export TALOSCONFIG="$HOME/.talos/config"
+
+{{ end -}}
+
+{{ if .isWorkComputer -}}
+# Environment variables and paths for my work computer
+export DOPPLER_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/6xaaq6k54gduufe277cwk3hhmm/credential" "YVWHX4FPNVBEHNNKBHCNO2IJCI"}}
+export SRC_ENDPOINT={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/ztxo2fvc3wp7oofvmywod5mznm/hostname" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+export SRC_ACCESS_TOKEN={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/ztxo2fvc3wp7oofvmywod5mznm/credential" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+export CODERPRODAPI={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/aro4cfum6bv6s36chde3yrzlly/credential" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+{{ end -}}
+{{ if not .isWorkComputer -}}
+export VULTR_INFERENCE_API_KEY={{onepasswordRead "op://lammc3e2zlgjtsr2lmg6c3nd6q/uornyxqbbmbfw2jc6ophztzd2m/credential" "II4A6DZ6H5H3XBDHVFWLX4MMTA" }}
+
+{{ end -}}
+
+# #################################
+# Aliases                         #
+# #################################
+
+# Aliases for all my computers
+alias sc="source ~/.zshrc"
+alias dns="dig +noall +answer"
+alias c="chezmoi"
+alias cup="chezmoi update --force"
+alias k="kubectl"
+alias kns="kubens"
+alias kctx="kubectx"
+alias kcheck="popeye"
+alias kgn="kubectl klock nodes"
+alias kgp="kubectl klock pods"
+alias kgs="kubectl klock services"
+alias kgd="kubectl klock deployments"
+alias kgi="kubectl klock ingress"
+alias kl="kubectl logs"
+alias listen="lsof -i -P | grep LISTEN | grep"
+alias listen-all="lsof -i -P | grep LISTEN"
+alias virt="virtctl console"
+
+{{ if not .isWorkComputer -}}
+# Aliases for my personal computers
+alias t="talosctl --nodes=172.20.1.201"
+{{ end -}}
+
+{{ if .isWorkComputer -}}
+# Aliases for my work computer
+alias cwic="KUBECONFIG=/Users/lmartin/.kube/noeefojkpdntzjot47vk43ubda.yaml cwic"
+alias gam="/Users/lmartin/bin/gam7/gam"
+alias vdi="ssh -i ~/.ssh/{{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/2cnzu4jdjq63e43xnu4y4vhywy/key-name" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }} {{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/5ipdxchh2hxhp5rzg5742kaipe/vdi-name" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}"
+alias tl="tsh login --proxy={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/5ipdxchh2hxhp5rzg5742kaipe/teleport-proxy" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}"
+{{ end -}}
+
+# #################################
+# Auto Completions                #
+# #################################
+
+{{ if and (eq .chezmoi.os "darwin") (ge (int (dig "machine" "memoryGb" 0 .)) 128) -}}
+# oMLX completions
+if (( ! $+functions[compdef] )); then
+    autoload -Uz compinit
+    compinit
+fi
+
+_omlx_up() {
+    _arguments \
+        '(-p --port)'{-p,--port}'[Port to bind (default: 11436)]:port:' \
+        '(-m --model-dir)'{-m,--model-dir}'[Model directory]:model directory:_directories' \
+        '(-h --help)'{-h,--help}'[Show help]'
+}
+
+_omlx_down() {
+    _message -r 'Stop oMLX inference server'
+}
+
+_omlx_status() {
+    _message -r 'Check oMLX server status'
+}
+
+compdef _omlx_up omlx-up
+compdef _omlx_down omlx-down
+compdef _omlx_status omlx-status
+{{ end -}}

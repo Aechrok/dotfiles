@@ -1,0 +1,6 @@
+README.md
+Casks/**
+docs/**
+settings.json
+claude-configs
+.claude/**

@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+# Open the oMLX admin dashboard in the default browser (default port: 11436).
+
+port=11436
+# Probe 127.0.0.1 (no IPv6 localhost resolution delay), but open localhost
+# so the URL in the browser stays readable.
+process_pattern='(^|/)([o]mlx serve|[o]mlx-server)([[:space:]]|$)'
+
+usage() {
+    cat <<'EOF'
+Usage: omlx-admin [-p PORT] [-h]
+
+  -p, --port PORT  Port of the oMLX server (default: 11436)
+  -h, --help       Show help
+
+Opens http://localhost:PORT/admin in the default browser.
+EOF
+}
+
+while (( $# > 0 )); do
+    case "$1" in
+        -p|--port)
+            if (( $# < 2 )) || [[ -z "$2" || "$2" == -* ]]; then
+                echo "Missing value for $1." >&2
+                exit 1
+            fi
+            port="$2"
+            shift 2
+            ;;
+        --port=*)
+            port="${1#*=}"
+            shift
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown argument: $1" >&2
+            usage >&2
+            exit 1
+            ;;
+    esac
+done
+
+if [[ ! "$port" =~ ^[0-9]{1,5}$ ]]; then
+    echo "Port must be an integer between 1 and 65535." >&2
+    exit 1
+fi
+port=$((10#$port))
+if (( port < 1 || port > 65535 )); then
+    echo "Port must be an integer between 1 and 65535." >&2
+    exit 1
+fi
+
+if ! pgrep -f "$process_pattern" >/dev/null 2>&1; then
+    echo "oMLX is not running. Start it with: omlx-up" >&2
+    exit 1
+fi
+
+if ! curl -sf --max-time 5 -o /dev/null "http://127.0.0.1:$port/health"; then
+    echo "oMLX is running but not answering on port $port." >&2
+    echo "Check the port, or run: omlx-status" >&2
+    exit 1
+fi
+
+url="http://localhost:$port/admin"
+echo "Opening $url"
+open "$url"

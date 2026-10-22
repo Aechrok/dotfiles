@@ -1,0 +1,206 @@
+packages:
+  universal:
+    taps:
+    - "jundot/omlx https://github.com/jundot/omlx":
+        requirements:
+          os: darwin
+          memory: 128
+    - "cjbassi/gotop"
+    - "derailed/k9s"
+    - "hashicorp/tap"
+    - "local/dotfiles"
+    brews:
+    - "bash"
+    - "chezmoi"
+    - "cloc"
+    - "docker-compose"
+    - "dockutil"
+    - "duti"
+    - "figlet"
+    - "gh"
+    - "git"
+    - "git-lfs"
+    - "gnupg"
+    - "go"
+    - "gpg"
+    - "gotop"
+    - "helm"
+    - "helmfile"
+    - "hermes-agent"
+    - "jq"
+    - "kubeconform"
+    - "kubectx"
+    - "kubernetes-cli"
+    - "krew"
+    - "kustomize"
+    - "libgit2"
+    - "llvm"
+    - "mas"
+    - "nmap"
+    - "omlx":
+        requirements:
+          os: darwin
+          memory: 128
+    - "openssl@3"
+    - "opentofu"
+    - "pi-coding-agent"
+    - "pkgconf"
+    - "python@3.11"
+    - "python@3.14"
+    - "rust"
+    - "s3cmd"
+    - "sshpass"
+    - "stern"
+    - "terraform"
+    - "thefuck"
+    - "the_silver_searcher"
+    - "tree"
+    - "vim"
+    - "wget"
+    - "yq"
+    - "z3"
+    casks:
+    - "1password"
+    - "1password-cli"
+    - "claude"
+    - "claude-code"
+    - "codex"
+    - "codex-app"
+    - "font-hack"
+    - "font-hack-nerd-font"
+    - "github"
+    - "google-chrome"
+    - "iterm2"
+    - "local/dotfiles/pocket-ai"
+    - "maccy"
+    - "mockoon"
+    - "ngrok"
+    - "orbstack"
+    - "postman"
+    - "visual-studio-code"
+    - "warp"
+    - "windows-app"
+    - "zed@preview"
+    mas:
+    - name: "Moom Classic"
+      id: "419330170"
+    - name: "Numbers"
+      id: "361304891"
+    - name: "Xcode"
+      id: "497799835"
+    krew:
+    - "klock"
+    - "virt"
+
+  work:
+    taps:
+    - "chainguard-dev/tap"
+    - "sourcegraph/src-cli"
+    brews:
+    - "argocd"
+    - "awscli"
+    - "azure-cli"
+    - "blackbox"
+    - "chainctl"
+    - "coder"
+    - "doppler"
+    - "fnm"
+    - "go-task"
+    - "pre-commit"
+    - "src-cli"
+    - "virtctl"
+    casks:
+    - "codex"
+    - "codex-app"
+    - "firefox"
+    - "gcloud-cli"
+    - "loom"
+    - "meetingbar"
+    mas: []
+    krew: []
+
+  private:
+    taps: []
+    brews:
+    - "talosctl"
+    casks:
+    - "discord"
+    - "signal"
+    - "twingate"
+    - "windscribe"
+    mas:
+    - name: "Telegram"
+      id: "747648890"
+    krew: []
+
+linux_packages:
+  universal:
+    keyrings:
+    - name: "githubcli-archive-keyring"
+      url: "https://cli.github.com/packages/githubcli-archive-keyring.gpg"
+      dearmor: false
+    - name: "1password-archive-keyring"
+      url: "https://downloads.1password.com/linux/keys/1password.asc"
+      dearmor: true
+    - name: "helm-archive-keyring"
+      url: "https://baltocdn.com"
+      dearmor: true
+    - name: "kubernetes-cli-archive-keyring"
+      url: "https://pkgs.k8s.io/core:/stable:/v1.35/deb/Release.key"
+      dearmor: true
+    sources:
+    - name: "github-cli"
+      line: "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main"
+    - name: "1password"
+      line: "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$(dpkg --print-architecture) stable main"
+    - name: "helm"
+      line: "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com all main"
+    - name: "kubernetes-cli"
+      line: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.35/deb/ /"
+    apps:
+    - "cloc"
+    - "git-lfs"
+    - "gnupg"
+    - "golang-go"
+    - "helm"
+    - "jq"
+    - "kubectx"
+    - "kubectl"
+    - "nmap"
+    - "gh"
+    - "1password-cli"
+
+  work:
+    keyrings:
+    - name: "docker"
+      url: "https://download.docker.com/linux/ubuntu/gpg"
+      dearmor: true
+    - name: "opentofu"
+      url: "https://get.opentofu.org/opentofu.gpg"
+      dearmor: false
+    - name: "opentofu-repo"
+      url: "https://packages.opentofu.org/opentofu/tofu/gpgkey"
+      dearmor: true
+    - name: "hashicorp-archive-keyring"
+      url: "https://apt.releases.hashicorp.com/gpg"
+      dearmor: true
+    sources:
+    - name: "docker"
+      line: 'deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable'
+    - name: "opentofu"
+      line: "deb [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-repo.gpg] https://packages.opentofu.org/opentofu/tofu/any/ any main"
+    - name: "hashicorp"
+      line: 'deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(. /etc/os-release && echo "$VERSION_CODENAME") main'
+    apps:
+    - "docker-ce"
+    - "docker-ce-cli"
+    - "containerd.io"
+    - "docker-buildx-plugin"
+    - "docker-compose-plugin"
+    - "tofu"
+    - "terraform"
+
+  private:
+    keyrings: []
+    sources: []
+    apps: []

@@ -1,0 +1,11 @@
+# A custom config replaces 1Password's default vault selection.
+# Select the vault for this computer's profile.
+[[ssh-keys]]
+{{ if .isWorkComputer -}}
+vault = "Employee"
+{{ else -}}
+vault = "Dotfiles"
+
+[[ssh-keys]]
+vault = "Private"
+{{ end -}}

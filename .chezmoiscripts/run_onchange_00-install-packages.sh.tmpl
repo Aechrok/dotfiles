@@ -1,0 +1,176 @@
+#!/bin/bash
+echo "=== Package Sync Started"
+{{ if eq .chezmoi.os "darwin" -}}
+
+
+# Environment state hashes — changes here trigger run_onchange re-execution
+# brew leaves: {{ output "brew" "leaves" | sha256sum }}
+# brew casks: {{ output "brew" "list" "--cask" "-1" | sha256sum }}
+# brew taps: {{ output "brew" "tap" | sha256sum }}
+# krew plugins: {{ output "sh" "-c" "if command -v kubectl-krew >/dev/null 2>&1; then kubectl krew list 2>/dev/null || true; fi" | sha256sum }}
+{{ range glob (joinPath .chezmoi.sourceDir "Casks" "*.rb") -}}
+# local cask {{ base . }}: {{ include . | sha256sum }}
+{{ end -}}
+
+{{ includeTemplate "local-homebrew-tap" . }}
+
+# Generate combined Brewfile in a temp file
+brewfile=$(mktemp) || exit 1
+trap 'rm -f "$brewfile"' EXIT
+cat > "$brewfile" <<BREWEOF
+{{ range (includeTemplate "eligible-packages" (dict "entries" .packages.universal.taps "os" .chezmoi.os "memory" (dig "machine" "memoryGb" 0 .))) | fromJson -}}
+tap {{ . | quote | replace " " "\", \"" }}, trusted: true
+{{ end -}}
+{{ range (includeTemplate "eligible-packages" (dict "entries" .packages.universal.brews "os" .chezmoi.os "memory" (dig "machine" "memoryGb" 0 .))) | fromJson -}}
+brew {{ . | quote }}
+{{ end -}}
+{{ range .packages.universal.casks -}}
+cask {{ . | quote }}
+{{ end -}}
+{{ range .packages.universal.mas -}}
+mas {{ .name | quote }}, id: {{ .id }}
+{{ end -}}
+
+{{ if .isWorkComputer -}}
+{{ range (includeTemplate "eligible-packages" (dict "entries" .packages.work.taps "os" .chezmoi.os "memory" (dig "machine" "memoryGb" 0 .))) | fromJson -}}
+tap {{ . | quote | replace " " "\", \"" }}, trusted: true
+{{ end -}}
+{{ range (includeTemplate "eligible-packages" (dict "entries" .packages.work.brews "os" .chezmoi.os "memory" (dig "machine" "memoryGb" 0 .))) | fromJson -}}
+brew {{ . | quote }}
+{{ end -}}
+{{ range .packages.work.casks -}}
+cask {{ . | quote }}
+{{ end -}}
+{{ range .packages.work.mas -}}
+mas {{ .name | quote }}, id: {{ .id }}
+{{ end -}}
+
+{{ else -}}
+
+{{ range (includeTemplate "eligible-packages" (dict "entries" .packages.private.taps "os" .chezmoi.os "memory" (dig "machine" "memoryGb" 0 .))) | fromJson -}}
+tap {{ . | quote | replace " " "\", \"" }}, trusted: true
+{{ end -}}
+{{ range (includeTemplate "eligible-packages" (dict "entries" .packages.private.brews "os" .chezmoi.os "memory" (dig "machine" "memoryGb" 0 .))) | fromJson -}}
+brew {{ . | quote }}
+{{ end -}}
+{{ range .packages.private.casks -}}
+cask {{ . | quote }}
+{{ end -}}
+{{ range .packages.private.mas -}}
+mas {{ .name | quote }}, id: {{ .id }}
+{{ end -}}
+{{ end -}}
+BREWEOF
+
+# Tap and trust all taps
+{{ range (includeTemplate "eligible-packages" (dict "entries" .packages.universal.taps "os" .chezmoi.os "memory" (dig "machine" "memoryGb" 0 .))) | fromJson -}}
+brew tap --force {{ . | quote | replace " " "\" \"" }}
+brew trust {{ . | quote | replace " " "\" \"" }}
+{{ end -}}
+{{ if .isWorkComputer -}}
+{{ range (includeTemplate "eligible-packages" (dict "entries" .packages.work.taps "os" .chezmoi.os "memory" (dig "machine" "memoryGb" 0 .))) | fromJson -}}
+brew tap --force {{ . | quote | replace " " "\" \"" }}
+brew trust {{ . | quote | replace " " "\" \"" }}
+{{ end -}}
+{{ else -}}
+{{ range (includeTemplate "eligible-packages" (dict "entries" .packages.private.taps "os" .chezmoi.os "memory" (dig "machine" "memoryGb" 0 .))) | fromJson -}}
+brew tap --force {{ . | quote | replace " " "\" \"" }}
+brew trust {{ . | quote | replace " " "\" \"" }}
+{{ end -}}
+{{ end -}}
+
+# Install packages
+if ! {
+{{ includeTemplate "chrome-bundle-install" . }}
+}; then
+    echo "Package installation failed; skipping cleanup." >&2
+    exit 1
+fi
+
+# Install Krew plugins only after the Krew package is available
+krew_plugins=()
+{{ range .packages.universal.krew -}}
+krew_plugins+=({{ . | quote }})
+{{ end -}}
+{{ if .isWorkComputer -}}
+{{ range .packages.work.krew -}}
+krew_plugins+=({{ . | quote }})
+{{ end -}}
+{{ else -}}
+{{ range .packages.private.krew -}}
+krew_plugins+=({{ . | quote }})
+{{ end -}}
+{{ end -}}
+
+if [[ ${#krew_plugins[@]} -gt 0 ]]; then
+    if command -v kubectl-krew &>/dev/null; then
+        kubectl krew install "${krew_plugins[@]}"
+    else
+        echo "WARNING: Krew is not installed; skipping Krew plugins: ${krew_plugins[*]}" >&2
+    fi
+fi
+
+# Warn about and remove undeclared packages
+undeclared=$(brew bundle cleanup --file="$brewfile" 2>/dev/null)
+if [[ -n "$undeclared" ]]; then
+    echo ""
+    echo "WARNING: Removing packages not declared in packages.yaml:"
+    echo "$undeclared"
+    brew bundle cleanup --force --file="$brewfile"
+    brew autoremove
+fi
+
+{{ else if eq .chezmoi.os "linux" -}}
+# Ubuntu/Debian only for now, but could be extended to other distros in the future
+{{ if lookPath "apt-get" -}}
+
+# Environment state hashes — changes here trigger run_onchange re-execution
+# apt state: {{ output "sh" "-c" "dpkg-query -W -f='${Package}\\n' 2>/dev/null; cat /etc/apt/sources.list.d/*.list 2>/dev/null; true" | sha256sum }}
+
+# Sections to install: universal always, plus work or private (mirrors the macOS logic)
+{{ $sections := list .linux_packages.universal -}}
+{{ if .isWorkComputer -}}
+{{ $sections = append $sections .linux_packages.work -}}
+{{ else -}}
+{{ $sections = append $sections .linux_packages.private -}}
+{{ end -}}
+
+sudo install -m 0755 -d /etc/apt/keyrings
+
+# Repository signing keys
+{{ range $sections -}}
+{{ range .keyrings -}}
+if [[ ! -f /etc/apt/keyrings/{{ .name }}.gpg ]]; then
+{{ if .dearmor -}}
+    curl -fsSL {{ .url | quote }} | sudo gpg --dearmor -o /etc/apt/keyrings/{{ .name }}.gpg
+{{ else -}}
+    curl -fsSL {{ .url | quote }} | sudo tee /etc/apt/keyrings/{{ .name }}.gpg > /dev/null
+{{ end -}}
+    sudo chmod a+r /etc/apt/keyrings/{{ .name }}.gpg
+fi
+{{ end -}}
+{{ end -}}
+
+# apt sources
+{{ range $sections -}}
+{{ range .sources -}}
+echo {{ .line | quote }} | sudo tee /etc/apt/sources.list.d/{{ .name }}.list > /dev/null
+{{ end -}}
+{{ end -}}
+
+sudo apt-get update
+
+# Install apps
+apps=()
+{{ range $sections -}}
+{{ range .apps -}}
+apps+=({{ . | quote }})
+{{ end -}}
+{{ end -}}
+if [[ ${#apps[@]} -gt 0 ]]; then
+    sudo apt-get install -y "${apps[@]}"
+fi
+
+{{ end -}}
+{{ end -}}
+echo "=== Package Sync Complete"

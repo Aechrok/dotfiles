@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Cmdline Parameters ------------
+IP=$1;
+
+# Define Colors ----------------
+RESTORE='\033[0m';
+RED='\033[00;31m';
+GREEN='\033[00;32m';
+YELLOW='\033[00;33m';
+
+SSH_STATUS=`nmap -Pn -p 22 --reason $IP | egrep -o "(open|closed|filtered)"`;
+
+if [ "$SSH_STATUS" == "open" ]
+then
+ssh -v -o "BatchMode=yes" -o "ConnectTimeout=3" -o "StrictHostKeyChecking=no" root@$IP 2>&1 | grep -i connect;
+else
+printf "${RED}N/A - SSH Port is $SSH_STATUS${RESTORE}\n";
+fi

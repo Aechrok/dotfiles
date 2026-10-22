@@ -1,0 +1,10 @@
+# Chrome updates itself, sometimes as root. Avoid replacing an existing app through
+# Homebrew: a failed removal can leave a real app in Caskroom and block later runs.
+# Only skip an existing, Homebrew-managed installation; still install missing apps.
+bundle_cask_skip=${HOMEBREW_BUNDLE_CASK_SKIP:-}
+if brew list --cask google-chrome >/dev/null 2>&1 &&
+    [[ -d "/Applications/Google Chrome.app" || -d "$HOME/Applications/Google Chrome.app" ]]; then
+    bundle_cask_skip="${bundle_cask_skip:+$bundle_cask_skip }google-chrome"
+fi
+
+HOMEBREW_BUNDLE_CASK_SKIP="$bundle_cask_skip" brew bundle --file="$brewfile"

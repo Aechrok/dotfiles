@@ -1,0 +1,167 @@
+#!/bin/bash
+# Shared helpers for audit-packages.sh and cleanup-packages.sh.
+# Source this file; do not execute directly.
+
+set -eo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PACKAGES_YAML="$SCRIPT_DIR/.chezmoidata/packages.yaml"
+
+if [[ ! -f "$PACKAGES_YAML" ]]; then
+    echo "Error: $PACKAGES_YAML not found" >&2
+    exit 1
+fi
+
+if ! command -v jq &>/dev/null; then
+    echo "Error: jq is required but not installed" >&2
+    exit 1
+fi
+
+if ! command -v yq &>/dev/null; then
+    echo "Error: yq is required but not installed" >&2
+    exit 1
+fi
+
+# --- Profile detection ---
+
+detect_profile() {
+    case "${1:---auto}" in
+        --work)    echo "work" ;;
+        --private) echo "private" ;;
+        --auto)
+            local chezmoi_config="${XDG_CONFIG_HOME:-$HOME/.config}/chezmoi/chezmoi.toml"
+            if [[ -f "$chezmoi_config" ]] && grep -q 'isWorkComputer = true' "$chezmoi_config"; then
+                echo "work"
+            else
+                echo "private"
+            fi
+            ;;
+        *) return 1 ;;
+    esac
+}
+
+# --- YAML parser ---
+# Extracts flat list of values from packages.<subsection>.<key> in packages.yaml.
+# Scalar list items are emitted as-is; mapping items (e.g. mas entries) emit their .name.
+extract_list() {
+    local subsection="$1" key="$2"
+    if [[ "$key" == brews || "$key" == taps ]]; then
+        chezmoi --source "$SCRIPT_DIR" execute-template "{{ includeTemplate \"eligible-packages\" (dict \"entries\" .packages.${subsection}.${key} \"os\" .chezmoi.os \"memory\" (dig \"machine\" \"memoryGb\" 0 .)) }}" | jq -r '.[]'
+        return
+    fi
+    yq -r ".packages.${subsection}.${key}[]? | (.name // .)" "$PACKAGES_YAML"
+}
+
+# Collect expected values for a key across universal + profile
+collect() {
+    extract_list universal "$1"
+    extract_list "$PROFILE" "$1"
+}
+
+# --- Build expected sets ---
+# Populates associative arrays: expected_brews, expected_casks, expected_taps, expected_mas
+# Also populates indexed arrays: expected_brew_raw, expected_cask_raw, expected_tap_raw
+
+build_expected_sets() {
+    # Brews
+    readarray -t expected_brew_raw < <(collect brews)
+    declare -gA expected_brews
+    if [[ ${#expected_brew_raw[@]} -gt 0 ]]; then
+        while IFS= read -r canonical; do
+            [[ -n "$canonical" ]] && expected_brews["$canonical"]=1
+        done < <(brew info --json=v2 "${expected_brew_raw[@]}" 2>/dev/null | jq -r '.formulae[].name' 2>/dev/null)
+        for raw in "${expected_brew_raw[@]}"; do
+            expected_brews["${raw##*/}"]=1
+        done
+    fi
+
+    # Casks
+    readarray -t expected_cask_raw < <(collect casks)
+    declare -gA expected_casks
+    if [[ ${#expected_cask_raw[@]} -gt 0 ]]; then
+        while IFS= read -r token; do
+            [[ -n "$token" ]] && expected_casks["$token"]=1
+        done < <(brew info --cask --json=v2 "${expected_cask_raw[@]}" 2>/dev/null | jq -r '.casks[].token' 2>/dev/null)
+        for raw in "${expected_cask_raw[@]}"; do
+            expected_casks["$raw"]=1
+            expected_casks["${raw##*/}"]=1
+        done
+    fi
+
+    # Taps
+    readarray -t expected_tap_raw < <(collect taps)
+    declare -gA expected_taps
+    for tap in "${expected_tap_raw[@]}"; do
+        [[ -n "$tap" ]] && expected_taps["$tap"]=1
+    done
+    expected_taps["homebrew/bundle"]=1
+    expected_taps["homebrew/core"]=1
+    expected_taps["homebrew/cask"]=1
+    for raw in "${expected_brew_raw[@]}" "${expected_cask_raw[@]}"; do
+        if [[ "$raw" == */*/* ]]; then
+            expected_taps["${raw%/*}"]=1
+        fi
+    done
+    for tap in "${expected_tap_raw[@]}"; do
+        if [[ "$tap" == */homebrew-* ]]; then
+            expected_taps["${tap/\/homebrew-//}"]=1
+        fi
+    done
+
+    # MAS
+    readarray -t expected_mas_names < <(collect mas)
+    declare -gA expected_mas
+    for name in "${expected_mas_names[@]}"; do
+        [[ -n "$name" ]] && expected_mas["$name"]=1
+    done
+}
+
+# --- Find offending packages ---
+# Populates arrays: offending_brews, offending_casks, offending_taps, offending_mas_names,
+#                    offending_mas_ids
+
+find_offending() {
+    offending_brews=()
+    offending_casks=()
+    offending_taps=()
+    offending_mas_names=()
+    offending_mas_ids=()
+
+    if command -v brew &>/dev/null; then
+        while IFS= read -r pkg; do
+            [[ -z "$pkg" ]] && continue
+            local short="${pkg##*/}"
+            if [[ -z "${expected_brews[$short]+x}" && -z "${expected_brews[$pkg]+x}" ]]; then
+                offending_brews+=("$pkg")
+            fi
+        done < <(brew leaves 2>/dev/null)
+
+        while IFS= read -r pkg; do
+            [[ -z "$pkg" ]] && continue
+            if [[ -z "${expected_casks[$pkg]+x}" ]]; then
+                offending_casks+=("$pkg")
+            fi
+        done < <(brew list --cask -1 2>/dev/null)
+
+        while IFS= read -r tap; do
+            [[ -z "$tap" ]] && continue
+            if [[ -z "${expected_taps[$tap]+x}" ]]; then
+                offending_taps+=("$tap")
+            fi
+        done < <(brew tap 2>/dev/null)
+    fi
+
+    if command -v mas &>/dev/null; then
+        while IFS= read -r line; do
+            [[ -z "$line" ]] && continue
+            local id name
+            id="$(echo "$line" | sed -E 's/^[[:space:]]*([0-9]+).*/\1/')"
+            name="$(echo "$line" | sed -E 's/^[[:space:]]*[0-9]+[[:space:]]+//' | sed -E 's/[[:space:]]+\([^)]*\)[[:space:]]*$//')"
+            [[ -z "$name" ]] && continue
+            if [[ -z "${expected_mas[$name]+x}" ]]; then
+                offending_mas_names+=("$name")
+                offending_mas_ids+=("$id")
+            fi
+        done < <(mas list 2>/dev/null)
+    fi
+}

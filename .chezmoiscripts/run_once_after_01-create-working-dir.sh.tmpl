@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# Check if the repos are already cloned
+
+echo "=== Repo Sync Started"
+
+# Ensure the GitHub CLI is authenticated before any clones. Work repos (and
+# SSO-protected orgs) fail without it. `gh auth status` is gh's own persisted
+# state, so this only triggers a login when actually needed and re-prompts
+# automatically if the token is ever revoked or expires.
+if ! gh auth status >/dev/null 2>&1; then
+    if [ -t 0 ]; then
+        echo "> GitHub CLI is not authenticated — launching 'gh auth login'"
+        gh auth login
+    else
+        echo "ERROR: gh is not authenticated and there is no terminal for 'gh auth login'." >&2
+        echo "       Run 'gh auth login' manually, then re-run 'chezmoi apply'." >&2
+        exit 1
+    fi
+fi
+
+mkdir -p $HOME/src
+
+# UNIVERSAL REPOS ====================================================
+cd $HOME/src
+if ! test -d $HOME/src/Aechrok; then
+    gh repo clone aechrok/Aechrok
+fi
+
+if ! test -d $HOME/src/Resume; then
+    gh repo clone aechrok/Resume
+fi
+
+# dotfiles is managed by chezmoi itself, so symlink the working copy to the
+# chezmoi source dir instead of maintaining a second clone. Editing files under
+# $HOME/src/dotfiles then writes straight into the source. Idempotent: only
+# (re)create the link when it's missing or pointing elsewhere, and never clobber
+# an existing real directory.
+DOTFILES_LINK="$HOME/src/dotfiles"
+DOTFILES_SOURCE="{{ .chezmoi.sourceDir }}"
+if [ -L "$DOTFILES_LINK" ]; then
+    if [ "$(readlink "$DOTFILES_LINK")" != "$DOTFILES_SOURCE" ]; then
+        ln -sfn "$DOTFILES_SOURCE" "$DOTFILES_LINK"
+    fi
+elif [ -e "$DOTFILES_LINK" ]; then
+    echo "WARNING: $DOTFILES_LINK exists and is not a symlink; leaving it untouched." >&2
+else
+    ln -s "$DOTFILES_SOURCE" "$DOTFILES_LINK"
+fi
+
+# WORK REPOS ========================================================
+{{ if .isWorkComputer -}}
+{{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/t5mco2hxdksafijv6rx746qd6e/notesPlain" "YVWHX4FPNVBEHNNKBHCNO2IJCI" }}
+{{ end -}}
+
+# PRIVATE REPOS ====================================================
+{{ if not .isWorkComputer -}}
+if ! test -d $HOME/src/infrastructure; then
+    gh repo clone aechrok/infrastructure
+fi
+
+if ! test -d $HOME/src/aechrok.github.io; then
+    gh repo clone aechrok/aechrok.github.io
+fi
+{{ end -}}
+
+echo "=== Repo Sync Completed"
