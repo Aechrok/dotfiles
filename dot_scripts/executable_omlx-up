@@ -91,10 +91,25 @@ nohup omlx serve \
     </dev/null >>"$log_file" 2>&1 &
 pid=$!
 
+# Follow the server PID rather than a shell: release the assertion when oMLX
+# exits. -s applies only on AC power; battery and display sleep stay normal.
+# Attach separately so $pid and the existing omlx-down process matching still
+# refer to oMLX, not a caffeinate wrapper.
+caffeinate_pid=""
+if [[ -x /usr/bin/caffeinate ]]; then
+    nohup /usr/bin/caffeinate -s -w "$pid" </dev/null >>"$log_file" 2>&1 &
+    caffeinate_pid=$!
+fi
+
 sleep 2
 
 if kill -0 "$pid" 2>/dev/null; then
     echo "oMLX started (PID $pid)"
+    if [[ -n "$caffeinate_pid" ]] && kill -0 "$caffeinate_pid" 2>/dev/null; then
+        echo "AC-only sleep prevention enabled while oMLX runs (caffeinate PID $caffeinate_pid)."
+    else
+        echo "Warning: AC-only sleep prevention is unavailable. Check $log_file." >&2
+    fi
     echo "Admin UI: http://localhost:$port/admin"
 else
     echo "oMLX failed to start. Check logs: tail -30 \"$log_file\"" >&2

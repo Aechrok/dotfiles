@@ -73,7 +73,7 @@ alias tl="tsh login --proxy={{onepasswordRead "op://nlytcyuvecwfsemch5rohs2nwu/5
 # #################################
 
 {{ if and (eq .chezmoi.os "darwin") (ge (int (dig "machine" "memoryGb" 0 .)) 128) -}}
-# oMLX completions
+# oMLX completions. Sleep prevention belongs to omlx-up, not shell startup.
 if (( ! $+functions[compdef] )); then
     autoload -Uz compinit
     compinit
