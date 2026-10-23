@@ -4,7 +4,7 @@
 
 # Environment variables and paths for all my computers
 PATH="$HOME/.scripts:${KREW_ROOT:-$HOME/.krew}/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/opt/homebrew/bin:/usr/local/bin:/usr/local/sbin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
-PATH="$(go env GOPATH)/bin:$PATH"
+PATH="$(go env GOPATH)/bin:$HOME/.orbstack/bin:$PATH"
 export KUBECONFIG=$(ls ~/.kube | grep conf | awk -v d="$HOME/.kube/" '{ printf "%s%s:", d,$0}')
 export NGROK_AUTHTOKEN={{onepasswordRead "op://lammc3e2zlgjtsr2lmg6c3nd6q/lh4gfkoeakzzm2bhmxdglbix5e/credential" "II4A6DZ6H5H3XBDHVFWLX4MMTA" }}
 export DOCKER_DEFAULT_PLATFORM=linux/arm64
