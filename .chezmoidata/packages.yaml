@@ -126,6 +126,7 @@ packages:
     casks:
     - "discord"
     - "signal"
+    - "steam"
     - "twingate"
     - "windscribe"
     mas:
