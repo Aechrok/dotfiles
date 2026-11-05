@@ -71,7 +71,6 @@ packages:
     - "github"
     - "google-chrome"
     - "iterm2"
-    - "local/dotfiles/pocket-ai"
     - "maccy"
     - "mockoon"
     - "ngrok"
